@@ -1,0 +1,20 @@
+
+rule dryclean:
+    version: 1.0
+    log: os.path.join(dirs_dict["LOGS_DIR"], "{pair}-dryclean.log"
+    input:
+        InputCov	normal_fragcounter_cov    	path
+        PON = w.get_param_from_pairs_table("dryclean_pon", "/gpfs/commons/groups/imielinski_lab/DB/modules/dryclean/TCGA_WGS_PON/detergent.rds")
+name    pair	value 
+WholeGenome	wholeGenome	value	TRUE
+Chromosome	chromosome	value	NA
+cores	cores	value	1
+germlineFilter	germline.filter	 value	FALSE
+blacklist       blacklist	 value	FALSE
+germlineFile	germline.file	 value	NA
+Collapse        collapse   value	 TRUE
+    output:
+    params:
+    threads: M.T('dryclean')
+    resources: nodes = M.T('dryclean')
+    shell: " >> {log} 2>&1
