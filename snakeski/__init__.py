@@ -45,3 +45,12 @@ class WorkflowSuperClass:
                 raise ConfigError("The super class trying to inherit %s does not\
                                    have a set `self.name`. Which means there may be other things\
                                    wrong with it, hence things will not continue." % type(self))
+
+    def load_pairs_table(self):
+        pairs_rds = self.config.get('pairs_rds')
+        if not os.path.exists(os.path.abspath(file_path)):
+            raise ConfigError('The pairs rds file path that provided does not exist: %s' % pairs_rds)
+
+        # load the rds and save it as a txt file
+
+
