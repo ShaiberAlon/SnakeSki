@@ -1,5 +1,5 @@
 # SnakeSki
-Collection of Snakemake workflow for data analysis jobs commonly done in mski Lab
+Collection of Snakemake workflow for data analysis jobs commonly done in mski Lab. These workflows are designed to be compatible with [Flow](https://github.com/mskilab/flow) modules.
 
 ## Usage
 
@@ -76,6 +76,7 @@ cd SnakeSki
 pip install -r requirements.txt
 ```
 
+```
 # updating the activation script for the Python virtual environmnet
 # so (1) Python knows where to find SnakeSki libraries, (2) BASH knows
 # where to find its programs, and (3) every time the environment is activated
@@ -85,3 +86,4 @@ echo 'export PYTHONPATH=$PYTHONPATH:~/git/SnakeSki/' >> ~/virtual-envs/SnakeSki/
 echo 'export PATH=$PATH:~/git/SnakeSki/bin:~/git/SnakeSki/sandbox' >> ~/virtual-envs/SnakeSki/bin/activate
 echo 'cd ~/git/SnakeSki && git pull && cd -' >> ~/virtual-envs/SnakeSki/bin/activate
 echo "# <<< ANVI'O STUFF <<<" >> ~/virtual-envs/SnakeSki/bin/activate
+```
