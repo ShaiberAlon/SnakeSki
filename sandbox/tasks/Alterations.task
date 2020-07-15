@@ -1,0 +1,18 @@
+# Alterations ("<libdir>run.sh <libdir>run.R --libdir <libdir> --pair <pair> --jabba_rds <jabba_rds> --annotated_vcf <annotated_vcf> --annotated_vcf_germline <annotated_vcf_germline> --het_pileups_wgs <het_pileups_wgs>")
+/gpfs/commons/groups/imielinski_lab/git/mskilab/flows/modules/Alterations
+input	jabba_rds	jabba_rds	path
+input	annotated_vcf_germline	annotated_vcf_germline	path	/dev/null
+input	annotated_vcf	annotated_vcf	path		/dev/null
+input	het_pileups_wgs	het_pileups_wgs	path		/dev/null
+input	pair	pair	value  	"tumor"
+output	alterations_matrix	alterations.matrix.rds$
+output	germline_muts	pathogenic.germline.muts.rds$
+output	germline_truncs	truncating.germline.muts.rds$
+output	somatic_muts	pathogenic.somatic.muts.rds$
+output	somatic_truncs	truncating.somatic.muts.rds$
+output	homdels	homdels.rds$
+output	hetdels	hetdels.rds$
+output	amplifications	amplifications.rds$
+output	mutations	mutation.table.rds$
+output	proteins	protein.table.rds$
+output	somatic.coords	somatic.coords.rds$

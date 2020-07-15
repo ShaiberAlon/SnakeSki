@@ -1,0 +1,11 @@
+#Module oncotable ("sh <libdir>run.sh <libdir>run.R -l <libdir> -i <id> -b <annotated_bcf> -e <complex> -g <gencode> -f ...")
+~/modules/Oncotable/
+input  id	id  value
+input  annotated_bcf  annotated_bcf   path
+input  complex  complex             path
+input  fusions  fusions             path
+input  filter    filter             value   "PASS"
+input  jabba  jabba_rds             path
+input  signature_counts             signature_counts            path
+input	 gencode	 gencode             path    "~/DB/GENCODE/gencode.v29lift37.annotation.nochr.rds"
+output	oncotable                    oncotable.rds

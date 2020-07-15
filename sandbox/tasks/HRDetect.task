@@ -1,0 +1,11 @@
+#Module hrdetect ("sh <libdir>run.sh <libdir>run.R -l <libdir> -r <snvs> -j <jabba> -s <svaba> -i <indels> -o <outdir> ...")
+/gpfs/commons/groups/imielinski_lab/git/mskilab/flows/modules/hrdetect///
+input     snvs   			strelka2_somatic_variants   	path		
+input     jabba_rds				jabba_rds		path
+input     svaba_somatic_vcf  			svaba_somatic_vcf		path
+output 	 	lohtest		lohtest.tsv
+output		snv_exposures		signit.summary.tsv
+output		microhomology		microhomology.tsv
+output		sv_exposures		signit.sv.summary.tsv
+output		features_table		raw_features_table.rds
+output		hrd_output_table		hrdetect_output_table.rds

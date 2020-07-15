@@ -1,0 +1,6 @@
+# Run Strelka on WGS for Pairs urn:lsid:broadinstitute.org:cancer.genome.analysis:10439:11
+~/modules/SnpEff
+input	ref_name	ref_name	value	"hg19"
+input	vcf_file	strelka2_somatic_variants 	path
+output	annotated_vcf		annotated.vcf$
+output	annotated_bcf		annotated.bcf$

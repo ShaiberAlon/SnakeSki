@@ -1,0 +1,18 @@
+#Task Snowman ("<libdir>snow.sh <libdir>snowman_161103 run  -t  <tumor_bam>  -n  <normal_bam>  -e  <error_rate>  -p ...")
+~/modules/Snowman
+input	tumor_bam	tumor_bam_wgs    path
+input	normal_bam	normal_bam_wgs	path
+input	error_rate	"0.01"	value
+input	cpus	cores	value	"8"
+input	analysis_id	pair	value
+input	ref	ref_fasta  	path	 "/gpfs/commons/groups/imielinski_lab/DB/references/hg19/human_g1k_v37_decoy.fasta"
+input	panel_of_normals	pon	path	"/gpfs/commons/groups/imielinski_lab/DB/Snowman/dbsnp.vcf"
+input	indel_mask	indel.mask	path	"/gpfs/commons/groups/imielinski_lab/DB/Snowman/snowman_blacklist.bed"
+input	flags	flags	value	"'-Y /gpfs/commons/groups/imielinski_lab/DB/Snowman/viral.1.1.genomic_ns.fna -V /gpfs/commons/groups/imielinski_lab/DB/Snowman/snowman_germline_mini_160413.bed -R /gpfs/commons/groups/imielinski_lab/DB/Snowman/repeat_masker_hg19_Simple.bed'"
+output	 svaba_somatic_vcf	        [(snowman)|(svaba)].somatic.sv.vcf(\\.gz)*$
+output	 svaba_unfiltered_somatic_vcf    [(snowman)|(svaba)].unfiltered.somatic.sv.vcf(\\.gz)*$
+#output	 svaba_alignments_plot 	        alignments.txt.gz$
+#output	 svaba_breakpoints 	        bps.txt.gz$
+output	 svaba_germline_indel_vcf 	[(snowman)|(svaba)].germline.indel.vcf(\\.gz)*$
+output	 svaba_germline_vcf 	        [(snowman)|(svaba)].germline.sv.vcf(\\.gz)*$
+output	 svaba_somatic_indel_vcf        [(snowman)|(svaba)].somatic.indel.vcf(\\.gz)*$

@@ -1,0 +1,12 @@
+# BWAMem urn:lsid:broadinstitute.org:cancer.genome.analysis:10993:4
+# note: fastq_filelist is a headerless tsv with R1 path \t R2 path \t LABEL
+~/modules/BWAMem_Fast
+input	FASTQPathFile	fastq_filelist	  path
+input	NumCores	num_cores	value	"16"
+input	ReferenceFASTA	ref_fasta   path 	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/human_g1k_v37_decoy.fasta"
+input	dbSNPPath	recal_snp_path	path   	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/dbsnp_138.b37.vcf.gz"
+input	indelsPath	recal_indels_path	path  	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/Mills_and_1000G_gold_standard.indels.b37.vcf.gz"
+input	sampleName	"aligned"	value
+input	jobs.spec.memory		max_mem	value	"8"
+input	bqsr		do_bqsr	value	"TRUE"
+output	 bam_wgs	 aligned.bam$

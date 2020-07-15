@@ -1,0 +1,9 @@
+#fhModule CovCBS ("sh <libdir>cbsFH.sh <libdir>cbsFH.R -l <libdir>  -t  <coverageTumor> -n  <coverageNormal> -f  <field...")
+~/modules/CovCBS/
+input	coverageTumor	tumor_dryclean_cov	path 
+input	coverageNormal	normal_dryclean_cov	  path  	"NULL"
+input	field		"foreground"	value
+input	name		pair	value
+output	cbs_cov_rds		.*cov.rds
+output	cbs_seg_rds		^seg.rds
+output	cbs_nseg_rds	^nseg.rds

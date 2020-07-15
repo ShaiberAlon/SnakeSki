@@ -1,0 +1,14 @@
+#Module dryclean ("sh <libdir>run.sh <libdir>run.R -l <libdir> -i <InputCov> -p <PON> -m <name> -w <WholeGenome> -C <Ch...")
+~/modules/dryclean///
+input	InputCov	normal_fragcounter_cov    	path
+input	PON	 dryclean_pon	 path	"/gpfs/commons/groups/imielinski_lab/DB/modules/dryclean/TCGA_WGS_PON/detergent.rds"
+input   name    pair	value 
+input	WholeGenome	wholeGenome	value	TRUE
+input	Chromosome	chromosome	value	NA
+input	cores	cores	value	1
+input	germlineFilter	germline.filter	 value	FALSE
+input   blacklist       blacklist	 value	FALSE
+input	germlineFile	germline.file	 value	NA
+input   Collapse        collapse   value	 TRUE
+output	normal_dryclean_cov   ^drycleaned.cov.rds
+

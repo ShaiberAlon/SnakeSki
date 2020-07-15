@@ -1,0 +1,9 @@
+#Module fragCounter ("<libdir>run.sh <libdir>run.R --libdir <libdir> --bam <Bam> --cov <Cov> -m <midpoint> -p <PairedEnd> ...")
+~/modules/fragCounter/
+input	Bam	normal_bam_wgs	 path
+input	Cov	"NULL"	   value
+input	midpoint  	midpoint	 value	"TRUE"
+input	PairedEnd	  "TRUE"	 value
+input	WindowSize 	200	  value
+input	GcMapDir	"NULL"	value
+output	normal_fragcounter_cov   cov.rds

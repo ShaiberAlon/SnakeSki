@@ -1,0 +1,8 @@
+# HetPileupsWGS urn:lsid:broadinstitute.org:cancer.genome.analysis:10898:6
+~/modules/Pileup
+input	TumorBam	tumor_bam_wgs	path
+input	KeepOnlyHets	"TRUE"	value
+input	NormalBam	normal_bam_wgs	path
+input	NumCores	cores	value	"4"
+input	SitesVCF	hapmap.sites	path  	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/hapmap_3.3.b37.vcf.gz"
+output	 het_pileups_wgs	 sites.txt$

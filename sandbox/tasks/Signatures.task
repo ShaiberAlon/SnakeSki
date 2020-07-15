@@ -1,0 +1,11 @@
+#Module Signatures ("sh <libdir>run.sh <libdir>run.R <libdir> -v <vcf> -p <signature_matrix> -a <signature_annotation> -g...")
+~/modules/Signatures/
+input	vcf	strelka2_somatic_variants  	path
+input	signature_matrix	'~/modules/Signatures/signatures.txt'	path		
+input	signature_annotation	"~/modules/Signatures/signature.annotations.txt"	path	
+input	reference_genome	ref			path	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/human_g1k_v37_decoy.fasta.2bit"
+input	cores	cores		value												"1"
+input	exome	"FALSE"		value
+output	signature_counts 	"signatures.txt"
+output	context_counts 	"contexts.txt"
+output	variant_prob	"variants_postprob.txt"

@@ -1,0 +1,6 @@
+#Module Events ("sh <libdir>run.sh <libdir>run.R -l <libdir> -g <jabba> ")
+~/modules/Events///
+input	jabba	 jabba_rds  path
+input	id	 pair  value
+input	ref	 ref   path	   "/gpfs/commons/groups/imielinski_lab/DB/references/hg19/human_g1k_v37_decoy.fastaOA"
+output	complex  complex.rds$

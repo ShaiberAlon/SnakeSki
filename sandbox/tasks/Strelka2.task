@@ -1,0 +1,11 @@
+# Module Strelka2 ("sh <libdir>run.sh <libdir>  <ref> <threads>  <normal.bam>  <tumor.bam> ")
+~/modules/Strelka2
+input	tumor.bam	tumor_bam_wgs	value  	/dev/null
+input	ref	ref	path	"/gpfs/commons/groups/imielinski_lab/DB/references/hg19/human_g1k_v37_decoy.fasta"
+input	threads	threads	value	1
+input	normal.bam	normal_bam_wgs	path
+input	germline	germline	value	  "TRUE"
+output	strelka2_somatic_variants	somatic.filtered.vcf.gz
+output	strelka2_germline_variants	germline.filtered.vcf.gz
+
+

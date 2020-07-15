@@ -1,0 +1,29 @@
+# JaBbA urn:lsid:broadinstitute.org:cancer.genome.analysis:10751:98
+~/modules/JaBbA
+input	CovFile	tumor_dryclean_cov	  path
+input	RAfile	svaba_somatic_vcf   	path	/dev/null
+input	CovField	field	value	    "foreground"
+input	RAsupp	svaba_unfiltered_somatic_vcf   	path	/dev/nullxb
+input	TierFieldName	tfield	value	"tier"
+input	NormalSegFile	cbs_nseg_rds	path    /dev/null
+input	SegFile	/dev/null  	value	  /dev/null
+input	SlackPenalty	slack	value	20
+input	OptionalHetPileupOutput	het_pileups_wgs	  path    /dev/null
+input	Purity	purity	value	NA
+input	Ploidy	ploidy	value	NA
+input	tilim	tilim	value	9000
+input	epgap	epgap	value	0.1
+input	ppmethod	pp.method	value	"sequenza"
+input	maxna	maxna	value	-1
+input	flags	flags	value	"--blacklist.coverage /gpfs/commons/groups/imielinski_lab/DB/JaBbA/hg19.coverage.blacklist.rds"
+input	NumIterations	iter	value	0
+input	TumorName	pair	value	"tumor"
+input	job.spec.memory	15	value
+input	indel	indel	value	"exclude"
+input	cnsignif	cnsignif	value	0.01
+output	 jabba_rds	 jabba.simple.rds$
+output	 jabba_gg	 jabba.simple.gg.rds$
+output	 jabba_vcf	 jabba.simple.vcf$
+output	 jabba_raw_rds	 jabba.raw.rds$
+output	 opti	opt.report.rds$
+output	 jabba_seg	 jabba.seg$
