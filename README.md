@@ -28,3 +28,60 @@ For example:
         }
 }
 ```
+
+## Installation
+
+SnakeSki workflows require Python 3 (recommended: version 3.7).
+
+### Installing from github using virtual environment
+
+The recommended way to install these workflows is using a virtual environment.
+
+You can set a virtual environment:
+
+```bash
+python -m venv /path/to/virtual/env
+```
+
+Going forward this text will assume your virtual environment is set up here: `~/virtual-envs/SnakeSki`:
+
+```bash
+python -m venv ~/virtual-envs/SnakeSki
+```
+
+
+
+Then activate it:
+
+```
+source ~/virtual-envs/SnakeSki/bin/activate
+```
+
+get a clone of the github repository:
+
+```bash
+git clone https://github.com/ShaiberAlon/SnakeSki.git
+```
+
+Notice: that from here on the text will assume you cloned the code to the following location:
+
+```
+~/git/SnakeSki
+```
+
+Install dependencies:
+
+```bash
+cd SnakeSki
+pip install -r requirements.txt
+```
+
+# updating the activation script for the Python virtual environmnet
+# so (1) Python knows where to find SnakeSki libraries, (2) BASH knows
+# where to find its programs, and (3) every time the environment is activated
+# it downloads the latest code from the `master` repository
+echo -e "\n# >>> SnakeSki STUFF >>>" >> ~/virtual-envs/SnakeSki/bin/activate
+echo 'export PYTHONPATH=$PYTHONPATH:~/git/SnakeSki/' >> ~/virtual-envs/SnakeSki/bin/activate
+echo 'export PATH=$PATH:~/git/SnakeSki/bin:~/git/SnakeSki/sandbox' >> ~/virtual-envs/SnakeSki/bin/activate
+echo 'cd ~/git/SnakeSki && git pull && cd -' >> ~/virtual-envs/SnakeSki/bin/activate
+echo "# <<< ANVI'O STUFF <<<" >> ~/virtual-envs/SnakeSki/bin/activate
