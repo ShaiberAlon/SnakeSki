@@ -120,7 +120,10 @@ class WorkflowSuperClass:
         task_file = self.config.get(rule, {}).get('task')
 
         if task_file:
-            if not self.task_definitions.get(rule, {}).get(param):
+            try:
+                self.task_definitions.get(rule, {}).loc[param,]:
+            except KeyError:
+                D(self.task_definitions.get(rule))
                 # if a task file was provided then we demand consistency
                 raise ConfigError('Someone is requesting a parameter that is not \
                                    defined in the task file. Here are the details: \
@@ -172,6 +175,5 @@ def get_path_to_workflows_dir():
 
 def D(debug_message, debug_log_file_path=".SNAKEMAKEDEBUG"):
     with open(debug_log_file_path, 'a') as output:
-            output.write(terminal.get_date() + '\n')
             output.write(str(debug_message) + '\n\n')
 

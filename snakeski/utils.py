@@ -163,6 +163,8 @@ def load_param_table_from_task_file(task_file):
         for s in task_lines[i].split('\t'):
             c = cols.pop()
             d.loc[i,c] = s
+    # set the param name as the index:
+    d.set_index('param')
 
     return d
 
