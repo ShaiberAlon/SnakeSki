@@ -1,6 +1,8 @@
 # SnakeSki
 Collection of Snakemake workflow for data analysis jobs commonly done in mski Lab. These workflows are designed to be compatible with [Flow](https://github.com/mskilab/flow) modules.
 
+Parts of the code in this project are inspired or adapted from [anvi'o](https://github.com/merenlab/anvio).
+
 ## Usage
 
 ```
