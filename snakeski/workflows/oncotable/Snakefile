@@ -23,7 +23,7 @@ rule oncotable:
         fusions = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'fusions', wildcards),
         jabba = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'jabba', wildcards),
         signature_counts = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'signature_counts', wildcards),
-        gencode = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'gencode', wildcards),
+        gencode = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
         oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
