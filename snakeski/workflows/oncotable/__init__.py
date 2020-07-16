@@ -36,8 +36,8 @@ class OncotableWorkflow(WorkflowSuperClass):
 
         self.dirs_dict.update({"ONCOTABLE_DIR": "Oncotable"})
 
-        targets = [os.path.join(oncotable_workflow_object.ROOT_DIR,
-                                oncotable_workflow_object.dirs_dict["ONCOTABLE_DIR"],
+        targets = [os.path.join(self.ROOT_DIR,
+                                self.dirs_dict["ONCOTABLE_DIR"],
                                 pair,
                                 "oncotable.rds") for pair in self.pairs.index]
 

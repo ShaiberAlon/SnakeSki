@@ -8,6 +8,7 @@ import snakeski.workflows as w
 
 
 oncotable_workflow_object = OncotableWorkflow(argparse.Namespace(config=config))
+dirs_dict = oncotable_workflow_object.dirs_dict
 
 rule oncotable_target_rule:
     input: oncotable_workflow_object.target_files
@@ -25,7 +26,7 @@ rule oncotable:
         gencode = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'gencode', wildcards),
     output:
     # TODO: this could be read from the task file
-        oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, oncotable_workflow_object.dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
+        oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
     params:
         id = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'id', wildcards),
         filter = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'filter', wildcards)
