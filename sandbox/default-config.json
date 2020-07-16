@@ -1,0 +1,7 @@
+{
+    "pairs_rds": "db/pairs.rds",
+    "ROOT_DIR": "",
+    "oncotable": {
+        "task": "~/tasks/hg19/core_dryclean/Oncotable.task"
+    }
+}
