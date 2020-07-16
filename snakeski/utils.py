@@ -146,7 +146,7 @@ def get_module_path_from_task_file(task_file):
 def load_param_table_from_task_file(task_file):
     ''' Load the parameters from the task file as a data frame'''
 
-    f = open(task_file).read().splitlines()
+    f = open(os.path.abspath(task_file)).read().splitlines()
     # skipping commented lines
     f = [s for s in f if not s.startswith('#')]
     # skipping the line in which the module is mentioned
