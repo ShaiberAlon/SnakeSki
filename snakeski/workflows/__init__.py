@@ -27,7 +27,7 @@ class WorkflowSuperClass:
 
 
 
-    def T(self, rule_name):
+    def T(self, rule):
         try:
             return self.threads[rule]
         except KeyError:
