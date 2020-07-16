@@ -59,5 +59,5 @@ class FilesNPathsError(SkiError):
     def __init__(self, e=None):
         self.e = remove_spaces(e)
         self.error_type = 'File/Path Error'
-        AnvioError.__init__(self)
+        SkiError.__init__(self)
 
