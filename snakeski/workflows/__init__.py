@@ -69,6 +69,9 @@ class WorkflowSuperClass:
         self.add_task_definitions(workflow_name)
         # if the user did not specify a directory then use current directory and put everything under "Flow" directory
         self.ROOT_DIR = self.config.get('ROOT_DIR', os.path.join(os.getcwd(), "Flow"))
+        os.makedirs(self.dirs_dict['LOGS_DIR'], exist_ok = True)
+        os.makedirs(self.ROOT_DIR, exist_ok = True)
+
 
 
 
@@ -107,6 +110,20 @@ class WorkflowSuperClass:
             return None
 
 
+    def get_param_type_from_task_file(self, rule, param):
+        try:
+            return(self.task_definitions.get(rule, pd.DataFrame()).loc[param, 'param_type'])
+        except KeyError:
+            return None
+
+
+    def get_default_value_from_task_file(self, rule, param):
+        try:
+            return(self.task_definitions.get(rule, pd.DataFrame()).loc[param, 'default_value'])
+        except KeyError:
+            return None
+
+
     def config_sanity_checks(self):
         ''' Place holder for sanity checks
         one thing we have to do here is:
@@ -123,14 +140,18 @@ class WorkflowSuperClass:
             try:
                 self.task_definitions.get(rule, {}).loc[param,]
             except KeyError:
-                D(self.task_definitions.get(rule))
                 # if a task file was provided then we demand consistency
                 raise ConfigError('Someone is requesting a parameter that is not \
                                    defined in the task file. Here are the details: \
                                    The parameter %s was requested for %s, but it \
                                    is not listed in the task file: %s' % (param, rule, task_file))
 
-            param_value = self.pairs.loc[wildcards.pair, self.get_param_name_from_task_file(rule, param)]
+            param_column_name = self.get_param_name_from_task_file(rule, param)
+            if param_column_name in self.pairs.columns:
+                param_value = self.pairs.loc[wildcards.pair, param_column_name]
+            else:
+                # get the default value from the task file
+                param_value = self.get_default_value_from_task_file(rule, param)
 
         else:
             # if there is no task file we assume the name of the column to be "param"
@@ -144,6 +165,10 @@ class WorkflowSuperClass:
             # we get the defalut value
             # this guarantees that Snakemake will run the appropriate step to get this input
             param_value = self.params.get(rule, {}).get(param, '')
+
+        if param_value:
+            if self.get_param_type_from_task_file(rule, param) == 'path':
+                param_value = os.path.realpath(os.path.expanduser(str(param_value).strip('"').strip("'")))
 
         return(param_value)
 
@@ -164,7 +189,7 @@ class WorkflowSuperClass:
                 # no default is set for this parameter name
                 return(None)
         # the defaults file does not exist
-        return(None) 
+        return(None)
 
 
 def get_path_to_workflows_dir():

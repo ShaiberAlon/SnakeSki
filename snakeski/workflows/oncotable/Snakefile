@@ -16,7 +16,7 @@ rule oncotable_target_rule:
 
 rule oncotable:
     version: 1.0
-    log: os.path.join(dirs_dict["LOGS_DIR"], "{pair}-oncotable.log")
+    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-oncotable.log"))
     input:
         annotated_bcf = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'annotated_bcf', wildcards),
         complex = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'complex', wildcards),
@@ -29,19 +29,29 @@ rule oncotable:
         oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
     params:
         id = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'id', wildcards),
-        filter = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'filter', wildcards)
+        filter = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'filter', wildcards),
+        output_dir = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}'),
+        module_path = oncotable_workflow_object.modules['oncotable']
     threads: oncotable_workflow_object.T('oncotable')
     resources: nodes = oncotable_workflow_object.T('oncotable')
     shell:
         """
+        # go to the directory
+        mkdir -p {params.output_dir}
+        cd {params.output_dir}
+
+        # run
         bash {params.module_path}run.sh {params.module_path}run.R \
                                         -l {params.module_path} \
-                                        -i {input.param.id} \
+                                        -i {params.id} \
                                         -b {input.annotated_bcf} \
-                                        -z {param.filter} \
+                                        -z {params.filter} \
                                         -e {input.complex} \
                                         -g {input.gencode} \
                                         -f {input.fusions} \
                                         -j {input.jabba} \
                                         -s {input.signature_counts} >> {log} 2>&1
+
+        # go back
+        cd -
         """
