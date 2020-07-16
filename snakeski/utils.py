@@ -164,7 +164,7 @@ def load_param_table_from_task_file(task_file):
             c = cols.pop()
             d.loc[i,c] = s
     # set the param name as the index:
-    d.set_index('param')
+    d.set_index('param', inplace = True)
 
     return d
 
