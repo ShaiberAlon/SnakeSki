@@ -153,7 +153,7 @@ def load_param_table_from_task_file(task_file):
     f = f[1:]
 
     # converting sequences of spaces to tabs
-    task_lines = ['\t'.join(s.split()) for s in f[2:]]
+    task_lines = ['\t'.join(s.split()) for s in f]
 
     col_names = get_task_column_names()
     d = pd.DataFrame(index = range(len(task_lines)), columns = col_names)
