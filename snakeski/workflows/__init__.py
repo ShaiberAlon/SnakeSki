@@ -121,7 +121,7 @@ class WorkflowSuperClass:
 
         if task_file:
             try:
-                self.task_definitions.get(rule, {}).loc[param,]:
+                self.task_definitions.get(rule, {}).loc[param,]
             except KeyError:
                 D(self.task_definitions.get(rule))
                 # if a task file was provided then we demand consistency
