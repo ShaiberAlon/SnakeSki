@@ -4,6 +4,7 @@
     Classes to define and work with oncotable workflow
 """
 
+import os
 import snakeski
 from snakeski.workflows import WorkflowSuperClass
 
@@ -20,7 +21,6 @@ class OncotableWorkflow(WorkflowSuperClass):
     def __init__(self, args=None):
         workflow_name = 'oncotable'
         self.init_workflow_super_class(args, workflow_name=workflow_name)
-        self.add_task_definitions(workflow_name)
 
         # TODO: these will be modified to match the expected outputs of the 
         # workflows that generate them
@@ -33,3 +33,12 @@ class OncotableWorkflow(WorkflowSuperClass):
         param_dict = {'gencode': self.get_default_param('gencode')}
         param_dict = {'annotated_bcf': ''}
         param_dict = self.params.update({workflow_name: param_dict})
+
+        self.dirs_dict.update({"ONCOTABLE_DIR": "Oncotable"})
+
+        targets = [os.path.join(oncotable_workflow_object.ROOT_DIR,
+                                oncotable_workflow_object.dirs_dict["ONCOTABLE_DIR"],
+                                pair,
+                                "oncotable.rds") for pair in self.pairs.index]
+
+        self.target_files.extend(targets)

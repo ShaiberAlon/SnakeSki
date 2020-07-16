@@ -20,12 +20,11 @@ class WorkflowSuperClass:
         self.target_files = []
         self.pairs = None
         self.task_definitions = {}
+        self.modules = {}
         self.dirs_dict = {"LOGS_DIR": "00_LOGS"}
         self.params = {}
         self.subworkflows = []
 
-        self.load_pairs_table()
-        self.config_sanity_checks()
 
 
     def T(self, rule_name):
@@ -61,15 +60,31 @@ class WorkflowSuperClass:
                                    have a set `self.name`. Which means there may be other things\
                                    wrong with it, hence things will not continue." % type(self))
 
+        if not self.config:
+            raise ConfigError('You need to provide a config file to run this workflow.')
+
+        self.load_pairs_table()
+        self.config_sanity_checks()
+        self.add_task_definitions(workflow_name)
+        self.add_task_definitions(workflow_name)
+        # if the user did not specify a directory then use current directory and put everything under "Flow" directory
+        self.ROOT_DIR = self.config.get('ROOT_DIR', os.path.join(os.getcwd(), "Flow"))
+
+
+
     def load_pairs_table(self):
         pairs_rds = self.config.get('pairs_rds')
-        if not os.path.exists(os.path.abspath(file_path)):
+        if not pairs_rds:
+            raise ConfigError('You must specify a path to a pairs rds file in your config file.')
+
+        if not filesnpaths.is_file_exists(pairs_rds, dont_raise=True):
             raise ConfigError('The pairs rds file path that was provided does not exist: %s' % pairs_rds)
 
         self.pairs = pd.read_csv(utils.save_pairs_table_as_TAB_delimited(pairs_rds), sep='\t', index_col=0)
 
 
     def add_task_definitions(self, workflow_name):
+        ''' Populate the task_definitions and module path by reading the task file'''
         task_file = self.config.get(workflow_name, {}).get('task')
 
         if not task_file:
@@ -82,6 +97,7 @@ class WorkflowSuperClass:
             raise ConfigError('You must provide a task file.')
 
         self.task_definitions[workflow_name] = utils.load_param_table_from_task_file(task_file)
+        self.modules[workflow_name] = utils.get_module_path_from_task_file(task_file)
 
 
     def get_param_name_from_task_file(self, rule, param):
@@ -109,9 +125,9 @@ class WorkflowSuperClass:
                 raise ConfigError('Someone is requesting a parameter that is not \
                                    defined in the task file. Here are the details: \
                                    The parameter %s was requested for %s, but it \
-                                   is not listed in the task file: %s' % (param, rule, task_file)
+                                   is not listed in the task file: %s' % (param, rule, task_file))
 
-            param_value = self.pairs.loc[wildcards.pair, self.get_param_name_from_task_file(rule, param))
+            param_value = self.pairs.loc[wildcards.pair, self.get_param_name_from_task_file(rule, param)]
 
         else:
             # if there is no task file we assume the name of the column to be "param"

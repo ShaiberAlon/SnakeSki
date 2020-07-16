@@ -133,7 +133,17 @@ def get_task_column_names():
     return ['io_type', 'param', 'param_name_in_pairs_table', 'param_type', 'default_value']
 
 
-def load_param_table_from_task_file(task_file, number_of_lines_to_skip=2):
+def get_module_path_from_task_file(task_file):
+    ''' Load the parameters from the task file as a data frame'''
+
+    f = open(task_file).read().splitlines()
+    # skipping commented lines
+    f = [s for s in f if not s.startswith('#')]
+    m = f[0]
+    return(m)
+
+
+def load_param_table_from_task_file(task_file):
     ''' Load the parameters from the task file as a data frame'''
 
     f = open(task_file).read().splitlines()
