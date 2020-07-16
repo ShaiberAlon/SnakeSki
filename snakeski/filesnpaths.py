@@ -3,6 +3,7 @@
 """File/Path operations mostly adopted from https://github.com/merenlab/anvio"""
 
 import os
+import json
 import tempfile
 
 from snakeski.errors import FilesNPathsError
@@ -41,3 +42,14 @@ def is_output_file_writable(file_path, ok_if_exists=True):
         raise FilesNPathsError("The file, '%s', already exists. We don't like overwriting stuff." % file_path)
     return True
 
+
+def is_file_json_formatted(file_path):
+    is_file_exists(file_path)
+
+    try:
+        json.load(open(file_path, 'rU'))
+    except ValueError as e:
+        raise FilesNPathsError("File '%s' does not seem to be a properly formatted JSON\
+                file (this is what the json library is complaining about:'%s')." % (file_path, e))
+
+    return True
