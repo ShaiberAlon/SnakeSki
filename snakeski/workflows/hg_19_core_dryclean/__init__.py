@@ -38,3 +38,5 @@ class hg19CoreDrycleanWorkflow(WorkflowSuperClass):
                            "fusions.rds") for pair in self.pairs.index])
 
         self.target_files.extend(targets)
+
+        self.subworkflows.extend('oncotable', 'fusions')
