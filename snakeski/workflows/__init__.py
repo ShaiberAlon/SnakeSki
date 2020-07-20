@@ -147,6 +147,10 @@ class WorkflowSuperClass:
                                    is not listed in the task file: %s' % (param, rule, task_file))
 
             param_column_name = self.get_param_name_from_task_file(rule, param)
+            if utils.is_param_a_literal(param_column_name):
+                # if it is a literal then we simply return the literal value
+                return param_column_name
+
             if param_column_name in self.pairs.columns:
                 param_value = self.pairs.loc[wildcards.pair, param_column_name]
             else:
