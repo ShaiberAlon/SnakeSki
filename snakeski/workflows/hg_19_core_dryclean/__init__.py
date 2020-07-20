@@ -5,6 +5,7 @@
     Classes to define and work with hg 19 core dryclean workflow
 """
 
+import os
 import snakeski
 from snakeski.workflows import WorkflowSuperClass
 
