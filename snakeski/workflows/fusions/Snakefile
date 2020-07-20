@@ -18,18 +18,13 @@ rule fusions:
     version: 1.0
     log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-fusions.log"))
     input:
-        annotated_bcf = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'annotated_bcf', wildcards),
-        complex = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'complex', wildcards),
-        fusions = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'fusions', wildcards),
         jabba = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'jabba', wildcards),
-        signature_counts = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'signature_counts', wildcards),
         gencode = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
         fusions = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}', "fusions.rds")
     params:
         id = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'id', wildcards),
-        filter = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'filter', wildcards),
         output_dir = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}'),
         module_path = fusions_workflow_object.modules['fusions']
     threads: fusions_workflow_object.T('fusions')
@@ -44,13 +39,8 @@ rule fusions:
         bash {params.module_path}run.sh {params.module_path}run.R \
                                         -l {params.module_path} \
                                         -i {params.id} \
-                                        -b {input.annotated_bcf} \
-                                        -z {params.filter} \
-                                        -e {input.complex} \
-                                        -g {input.gencode} \
-                                        -f {input.fusions} \
-                                        -j {input.jabba} \
-                                        -s {input.signature_counts} >> {log} 2>&1
+                                        -g {input.jabba} \
+                                        -r {input.gencode} >> {log} 2>&1
 
         # go back
         cd -
