@@ -37,4 +37,4 @@ class hg19CoreDrycleanWorkflow(WorkflowSuperClass):
                            pair,
                            "fusions.rds") for pair in self.pairs.index])
 
-        self.target_files = targets
+        self.target_files.extend(targets)
