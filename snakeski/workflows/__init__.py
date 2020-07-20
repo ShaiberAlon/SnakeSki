@@ -153,6 +153,9 @@ class WorkflowSuperClass:
 
             elif param_column_name in self.pairs.columns:
                 param_value = self.pairs.loc[wildcards.pair, param_column_name]
+            elif param_column_name == self.pairs.index.name:
+                # the parameter is the key
+                param_value = wildcards.pair
             else:
                 # get the default value from the task file
                 param_value = self.get_default_value_from_task_file(rule, param)
