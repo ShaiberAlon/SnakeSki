@@ -133,6 +133,25 @@ def get_task_column_names():
     return ['io_type', 'param', 'param_name_in_pairs_table', 'param_type', 'default_value']
 
 
+def is_param_a_literal(param):
+    ''' Parameters that are surrounded by quotes are considered literals by Flow
+    meaning they are used as is, instead of defining a column name in the pairs table
+    '''
+    if None:
+        return False
+
+    if type(param) is not str:
+        raise ConfigError('Parameters must be of type %s, but someone provided a parameter of type %s. \
+                           This is the kind of error you should never encounter so you might have to contact \
+                           one of the developers.')
+
+    for q in ['"', "'"]:
+        if param.startswith(q) and param.endswith(q) and len(param) > 1:
+            return True
+
+    return False
+
+
 def get_module_path_from_task_file(task_file):
     ''' Load the parameters from the task file as a data frame'''
 
