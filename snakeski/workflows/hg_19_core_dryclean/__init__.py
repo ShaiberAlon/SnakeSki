@@ -22,11 +22,18 @@ class hg19CoreDrycleanWorkflow(WorkflowSuperClass):
         workflow_name = 'hg19_core_dryclean'
         self.init_workflow_super_class(args, workflow_name=workflow_name)
 
-        self.subworkflows.extend(['oncotable'])
+        self.dirs_dict.update({"ONCOTABLE_DIR": "Oncotable",
+                               "FUSIONS_DIR": "Fusions"})
 
-        targets = [os.path.join(oncotable_workflow_object.ROOT_DIR,
-                                oncotable_workflow_object.dirs_dict["ONCOTABLE_DIR"],
+        targets = []
+        targets.extend([os.path.join(self.ROOT_DIR,
+                                self.dirs_dict["ONCOTABLE_DIR"],
                                 pair,
-                                "oncotable.rds") for pair in self.pairs.index]
+                                "oncotable.rds") for pair in self.pairs.index])
 
+        targets.extend([os.path.join(self.ROOT_DIR,
+                           self.dirs_dict["FUSIONS_DIR"],
+                           pair,
+                           "fusions.rds") for pair in self.pairs.index])
 
+        self.target_files = targets

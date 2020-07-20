@@ -10,8 +10,7 @@ import snakeski.workflows as w
 hg19_core_dryclean_workflow_object = hg19CoreDrycleanWorkflow(argparse.Namespace(config=config)
 
 rule hg19_core_pipeline_target_rule:
-    input:
-        oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, oncotable_workflow_object.dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
+    input: hg19_core_dryclean_workflow_object.target_files
 
 
 for _subworkflow in hg19_core_dryclean_workflow_object.subworkflows:
