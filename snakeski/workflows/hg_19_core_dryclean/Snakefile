@@ -7,7 +7,7 @@ from snakeski.workflows.hg19_core_dryclean import hg19CoreDrycleanWorkflow
 import snakeski.workflows as w
 
 
-hg19_core_dryclean_workflow_object = hg19CoreDrycleanWorkflow(argparse.Namespace(config=config)
+hg19_core_dryclean_workflow_object = hg19CoreDrycleanWorkflow(argparse.Namespace(config=config))
 
 rule hg19_core_pipeline_target_rule:
     input: hg19_core_dryclean_workflow_object.target_files
