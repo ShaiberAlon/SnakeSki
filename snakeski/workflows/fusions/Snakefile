@@ -26,11 +26,11 @@ rule fusions:
         gencode = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
-        fusions = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}', "fusions.rds")
+        fusions = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}', "fusions.rds")
     params:
         id = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'id', wildcards),
         filter = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'filter', wildcards),
-        output_dir = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}'),
+        output_dir = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}'),
         module_path = fusions_workflow_object.modules['fusions']
     threads: fusions_workflow_object.T('fusions')
     resources: nodes = fusions_workflow_object.T('fusions')
