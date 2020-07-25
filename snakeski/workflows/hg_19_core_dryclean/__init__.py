@@ -39,4 +39,4 @@ class hg19CoreDrycleanWorkflow(WorkflowSuperClass):
 
         self.target_files.extend(targets)
 
-        self.subworkflows.extend('oncotable', 'fusions')
+        self.subworkflows.extend(['oncotable', 'fusions'])

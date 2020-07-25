@@ -66,7 +66,6 @@ class WorkflowSuperClass:
         self.load_pairs_table()
         self.config_sanity_checks()
         self.add_task_definitions(workflow_name)
-        self.add_task_definitions(workflow_name)
         # if the user did not specify a directory then use current directory and put everything under "Flow" directory
         self.ROOT_DIR = self.config.get('ROOT_DIR', os.path.join(os.getcwd(), "Flow"))
         os.makedirs(self.dirs_dict['LOGS_DIR'], exist_ok = True)
@@ -97,10 +96,14 @@ class WorkflowSuperClass:
                 task_file = task_files.get(workflow_name)
 
         if not task_file:
-            raise ConfigError('You must provide a task file.')
+            pass
+            # TODO: we probably want to raise an error if there is no task file but it requires 
+            # us to identify cases in which we inherit subworkflows
+            # raise ConfigError('You must provide a task file.')
 
-        self.task_definitions[workflow_name] = utils.load_param_table_from_task_file(task_file)
-        self.modules[workflow_name] = utils.get_module_path_from_task_file(task_file)
+        else:
+            self.task_definitions[workflow_name] = utils.load_param_table_from_task_file(task_file)
+            self.modules[workflow_name] = utils.get_module_path_from_task_file(task_file)
 
 
     def get_param_name_from_task_file(self, rule, param):
