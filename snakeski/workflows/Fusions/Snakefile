@@ -34,7 +34,7 @@ rule Fusions:
         gencode = lambda wildcards: Fusions_workflow_object.get_rule_param('Fusions', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
-        Fusions = os.path.join(Fusions_workflow_object.ROOT_DIR, dirs_dict["Fusions"], '{pair}', "Fusions.rds")
+        Fusions = os.path.join(Fusions_workflow_object.ROOT_DIR, dirs_dict["Fusions"], '{pair}', "fusions.rds")
     params:
         id = lambda wildcards: Fusions_workflow_object.get_rule_param('Fusions', 'id', wildcards),
         output_dir = os.path.join(Fusions_workflow_object.ROOT_DIR, dirs_dict['Fusions'], '{pair}'),
