@@ -283,7 +283,8 @@ class WorkflowSuperClass:
         elif param_column_name == self.pairs.index.name:
             # the parameter is the key parameter (usually "pair")
             param_value = wildcards.pair
-        else:
+
+        if not param_value:
             # get the default value from the task file
             param_value = self.get_default_value_from_task_file(task, param)
 
