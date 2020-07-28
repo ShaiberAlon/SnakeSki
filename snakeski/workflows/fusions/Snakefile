@@ -3,32 +3,44 @@
 import os
 import argparse
 
-from snakeski.workflows.fusions import FusionsWorkflow
 import snakeski.workflows as w
+from snakeski.workflows import WorkflowSuperClass
 
 
-fusions_workflow_object = FusionsWorkflow(argparse.Namespace(config=config))
-dirs_dict = fusions_workflow_object.dirs_dict
 
-rule fusions_target_rule:
-    input: fusions_workflow_object.target_files
+sub_workflow_mode = False if 'workflows/Fusions' in workflow.included[0] else True
+if not sub_workflow_mode:
+    # if this is not a sub workflow then we need to initialize the workflow object
+    # don't be confused, child. when things come to this point, the variable `config`
+    # is already magically filled in by snakemake:
+    Fusions_workflow_object = WorkflowSuperClass(argparse.Namespace(config=config))
+    Fusions_workflow_object.init('Fusions')
+
+    rule Fusions_target_rule:
+        input: Fusions_workflow_object.target_files
+
+else:
+    Fusions_workflow_object = workflow_object
+
+dirs_dict = Fusions_workflow_object.dirs_dict
 
 
-rule fusions:
+
+rule Fusions:
     version: 1.0
-    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-fusions.log"))
+    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-Fusions.log"))
     input:
-        jabba = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'jabba', wildcards),
-        gencode = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'gencode', wildcards)
+        jabba = lambda wildcards: Fusions_workflow_object.get_rule_param('Fusions', 'jabba', wildcards),
+        gencode = lambda wildcards: Fusions_workflow_object.get_rule_param('Fusions', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
-        fusions = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}', "fusions.rds")
+        Fusions = os.path.join(Fusions_workflow_object.ROOT_DIR, dirs_dict["Fusions"], '{pair}', "Fusions.rds")
     params:
-        id = lambda wildcards: fusions_workflow_object.get_rule_param('fusions', 'id', wildcards),
-        output_dir = os.path.join(fusions_workflow_object.ROOT_DIR, dirs_dict["FUSIONS_DIR"], '{pair}'),
-        module_path = fusions_workflow_object.modules['fusions']
-    threads: fusions_workflow_object.T('fusions')
-    resources: nodes = fusions_workflow_object.T('fusions')
+        id = lambda wildcards: Fusions_workflow_object.get_rule_param('Fusions', 'id', wildcards),
+        output_dir = os.path.join(Fusions_workflow_object.ROOT_DIR, dirs_dict['Fusions'], '{pair}'),
+        module_path = Fusions_workflow_object.modules['Fusions']
+    threads: Fusions_workflow_object.T('Fusions')
+    resources: nodes = Fusions_workflow_object.T('Fusions')
     shell:
         """
         # go to the directory

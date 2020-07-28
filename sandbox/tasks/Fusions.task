@@ -1,6 +1,6 @@
 #Module Fusions ("sh <libdir>run.sh <libdir>run.R -l <libdir> -g <jabba> ")
 ~/modules/Fusions/
 input	jabba	 jabba_rds  path
-input	gencode	 "~/DB/GENCODE/gencode.v29lift37.annotation.nochr.rds"  path
+input	 gencode	 gencode             path    "~/DB/GENCODE/gencode.v29lift37.annotation.nochr.rds"
 input	id	 pair  value
 output	fusions  fusions.rds$

@@ -133,6 +133,21 @@ def get_task_column_names():
     return ['io_type', 'param', 'param_name_in_pairs_table', 'param_type', 'default_value']
 
 
+def fix_output_parameter_name(param=''):
+    ''' deal with special charachters in output file names'''
+    param = param.replace('$', '')
+    param = param.replace('.*', '')
+    param = param.replace('*', '')
+    param = param.replace('^', '')
+    param = param.replace('"', '')
+    param = param.replace("'", '')
+    return(param)
+
+
+def fix_path(path):
+    return(os.path.realpath(os.path.expanduser(str(path).strip('"').strip("'"))))
+
+
 def is_param_a_literal(param):
     ''' Parameters that are surrounded by quotes are considered literals by Flow
     meaning they are used as is, instead of defining a column name in the pairs table

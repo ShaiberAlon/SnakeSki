@@ -1,21 +1,23 @@
 # -*- coding: utf-8
 
+# -*- coding: utf-8
+
 import os
 import argparse
 
-from snakeski.workflows.hg_19_core_dryclean import hg19CoreDrycleanWorkflow
 import snakeski.workflows as w
+from snakeski.workflows import WorkflowSuperClass
 
 
-hg19_core_dryclean_workflow_object = hg19CoreDrycleanWorkflow(argparse.Namespace(config=config))
+workflow_object = WorkflowSuperClass(argparse.Namespace(config=config))
+workflow_object.init('hg19_core_dryclean')
 
 rule hg19_core_pipeline_target_rule:
-    input: hg19_core_dryclean_workflow_object.target_files
+    input: workflow_object.target_files
 
 
-for _subworkflow in hg19_core_dryclean_workflow_object.subworkflows:
-    w.D(os.path.join(w.get_path_to_workflows_dir(),
+for _subworkflow in workflow_object.tasks:
+    _include = os.path.join(w.get_path_to_workflows_dir(),
                           _subworkflow,
-                          'Snakefile'))
-
-include: '/gpfs/commons/groups/imielinski_lab/git/SnakeSki/snakeski/workflows/fusions/Snakefile', '/gpfs/commons/groups/imielinski_lab/git/SnakeSki/snakeski/workflows/oncotable/Snakefile'
+                          'Snakefile')
+    include: _include

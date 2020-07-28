@@ -3,37 +3,48 @@
 import os
 import argparse
 
-from snakeski.workflows.oncotable import OncotableWorkflow
 import snakeski.workflows as w
+from snakeski.workflows import WorkflowSuperClass
 
 
-oncotable_workflow_object = OncotableWorkflow(argparse.Namespace(config=config))
-dirs_dict = oncotable_workflow_object.dirs_dict
+sub_workflow_mode = False if 'workflows/Oncotable' in workflow.included[0] else True
+w.D(workflow.included)
+if not sub_workflow_mode:
+    # if this is not a sub workflow then we need to initialize the workflow object
+    # don't be confused, child. when things come to this point, the variable `config`
+    # is already magically filled in by snakemake:
+    Oncotable_workflow_object = WorkflowSuperClass(argparse.Namespace(config=config))
+    Oncotable_workflow_object.init('Oncotable')
 
-rule oncotable_target_rule:
-    input: oncotable_workflow_object.target_files
+    rule Oncotable_target_rule:
+        input: Oncotable_workflow_object.target_files
 
+else:
+    Oncotable_workflow_object = workflow_object
 
-rule oncotable:
+dirs_dict = Oncotable_workflow_object.dirs_dict
+w.D(dirs_dict)
+
+rule Oncotable:
     version: 1.0
-    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-oncotable.log"))
+    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-Oncotable.log"))
     input:
-        annotated_bcf = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'annotated_bcf', wildcards),
-        complex = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'complex', wildcards),
-        fusions = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'fusions', wildcards),
-        jabba = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'jabba', wildcards),
-        signature_counts = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'signature_counts', wildcards),
-        gencode = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'gencode', wildcards)
+        annotated_bcf = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'annotated_bcf', wildcards),
+        complex = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'complex', wildcards),
+        fusions = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'fusions', wildcards),
+        jabba = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'jabba', wildcards),
+        signature_counts = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'signature_counts', wildcards),
+        gencode = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
-        oncotable = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}', "oncotable.rds")
+        Oncotable = os.path.join(Oncotable_workflow_object.ROOT_DIR, dirs_dict["Oncotable"], '{pair}', "oncotable.rds")
     params:
-        id = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'id', wildcards),
-        filter = lambda wildcards: oncotable_workflow_object.get_rule_param('oncotable', 'filter', wildcards),
-        output_dir = os.path.join(oncotable_workflow_object.ROOT_DIR, dirs_dict["ONCOTABLE_DIR"], '{pair}'),
-        module_path = oncotable_workflow_object.modules['oncotable']
-    threads: oncotable_workflow_object.T('oncotable')
-    resources: nodes = oncotable_workflow_object.T('oncotable')
+        id = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'id', wildcards),
+        filter = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'filter', wildcards),
+        output_dir = os.path.join(Oncotable_workflow_object.ROOT_DIR, dirs_dict["Oncotable"], '{pair}'),
+        module_path = Oncotable_workflow_object.modules['Oncotable']
+    threads: Oncotable_workflow_object.T('Oncotable')
+    resources: nodes = Oncotable_workflow_object.T('Oncotable')
     shell:
         """
         # go to the directory
