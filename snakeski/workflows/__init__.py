@@ -18,6 +18,7 @@ class WorkflowSuperClass:
         self.target_files = []
         self.input_param_dict = {} # dictionary to connect input parameters to tasks
         self.output_param_dict = {} # dictionary to connect output parameters to tasks
+        self.io_dict = {} # dictionary with output parameters and list of tuples of matching inputs with the format (task, input)
         self.param_dataframes = {}
         self.pairs = None
         self.tasks = {}
@@ -116,18 +117,29 @@ class WorkflowSuperClass:
             self.read_task_file(task)
 
         self.check_input_params()
+        self.populate_io_dict()
         self.update_defaults_using_output_parameters()
         self.update_targets()
+
+
+    def populate_io_dict(self):
+        ''' Create a dictionary to map from output files to input files that match them'''
+        for oparam in self.output_param_dict:
+            matches = []
+            for task in self.tasks:
+                inputs = self.param_dataframes[task].loc[self.param_dataframes[task]['param_name_in_pairs_table'] == oparam].index
+                if len(inputs):
+                    matches.extend([(task, i) for i in inputs])
+
+            if len(matches):
+                self.io_dict[oparam] = matches
 
 
     def update_targets(self):
         ''' Populate self.target_files.'''
 
-        # get a list of outputs that have matching inputs
-        io_overlap = [i for i in self.output_param_dict if i in self.input_param_dict]
-
         # list of tasks that we don't need to schedule since they have dependencies
-        non_target_tasks = [self.output_param_dict[i] for i in io_overlap]
+        non_target_tasks = [self.output_param_dict[i] for i in self.io_dict]
 
         target_tasks = set(self.tasks.keys()) - set(non_target_tasks)
 
@@ -135,28 +147,25 @@ class WorkflowSuperClass:
         for task in target_tasks:
             task_outputs = self.param_dataframes[task].loc[self.param_dataframes[task]['io_type'] == 'output'].index
             self.target_files.extend([self.get_output_file_path(task, param).format(pair=p) for param in task_outputs for p in self.pairs.index])
-        
+
 
     def update_defaults_using_output_parameters(self):
         ''' Find input and output parameters with matching names and use the
         output parameter as the default for the input parameter.
         '''
-        overlap = [param for param in self.input_param_dict if param in self.output_param_dict]
-
-        for param in overlap:
-            output_task = self.output_param_dict[param]
-            for task in self.input_param_dict[param]:
-                output_value = self.get_output_file_path(output_task, param)
-                current_default_value = self.param_dataframes[task].loc[param, 'default_value']
+        for oparam in self.io_dict:
+            output_task = self.output_param_dict[oparam]
+            for input_task, iparam in self.io_dict[oparam]:
+                output_value = self.get_output_file_path(output_task, oparam)
+                current_default_value = self.param_dataframes[input_task].loc[iparam, 'default_value']
                 if not pd.isna(current_default_value):
                     print('Warning: the parameter %s in task %s matches an output \
                            parameter of task %s, and yet a default was provided in \
                            %s and hence the default from the task file will be used \
-                           instead of the output of %s.' % task)
+                           instead of the output of %s.' % input_task)
 
                 else:
-                    self.param_dataframes[task].loc[param, 'default_value'] = output_value
-        
+                    self.param_dataframes[input_task].loc[iparam, 'default_value'] = output_value
 
 
     def check_input_params(self):
@@ -207,7 +216,6 @@ class WorkflowSuperClass:
             if self.input_param_dict.get(iparam):
                 # such a parameter already was defined
                 # append this task name
-                print(self.input_param_dict)
                 self.input_param_dict[iparam].append(task)
             else:
                 self.input_param_dict[iparam] = [task]
