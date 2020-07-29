@@ -69,7 +69,9 @@ class WorkflowSuperClass:
 
     def populate_dirs_dict(self):
         ''' This is a place holder for now in case we will wish to allow users to change these names using the config file'''
-        self.dirs_dict.update(dict(zip(self.tasks.keys(), self.tasks.keys())))
+        self.dirs_dict.update(dict(zip(list(self.tasks.keys()), list(self.tasks.keys()))))
+        D('hi')
+        D(self.dirs_dict)
 
 
     def load_pairs_table(self):
@@ -85,8 +87,14 @@ class WorkflowSuperClass:
 
     def get_output_file_path(self, task, param):
         ''' Return the path to an output file.'''
-        output_name_fixed = utils.fix_output_parameter_name(self.get_output_name_from_task_file(task, param))
-        return os.path.join(self.ROOT_DIR, task, '{pair}', output_name_fixed)
+        D('hi %s %s' %(task, param))
+        output_name = self.get_output_name_from_task_file(task, param)
+        D(output_name)
+        if output_name:
+            output_name_fixed = utils.fix_output_parameter_name(output_name)
+            D(output_name_fixed)
+            return os.path.join(self.ROOT_DIR, task, '{pair}', output_name_fixed)
+        return None
 
 
     def get_tasks_dict(self):
@@ -143,7 +151,7 @@ class WorkflowSuperClass:
         for param in overlap:
             output_task = self.output_param_dict[param]
             for task in self.input_param_dict[param]:
-                output_value = self.get_output_file_path(task, param)
+                output_value = self.get_output_file_path(output_task, param)
                 current_default_value = self.param_dataframes[task].loc[param, 'default_value']
                 if not pd.isna(current_default_value):
                     print('Warning: the parameter %s in task %s matches an output \
@@ -276,17 +284,22 @@ class WorkflowSuperClass:
         if utils.is_param_a_literal(param_column_name):
             # if it is a literal then we simply return the literal value
             param_value = param_column_name
+            D('1 : %s, %s, %s' % ( task, param, param_value))
 
         elif param_column_name in self.pairs.columns:
             # if there is such a column already in the pairs table then we read the value from there
             param_value = self.pairs.loc[wildcards.pair, param_column_name]
+            if pd.isna(param_value):
+                param_value = ''
         elif param_column_name == self.pairs.index.name:
             # the parameter is the key parameter (usually "pair")
             param_value = wildcards.pair
+            D('3 : %s, %s, %s' % ( task, param, param_value))
 
         if not param_value:
             # get the default value from the task file
             param_value = self.get_default_value_from_task_file(task, param)
+            D('4: %s, %s, %s' % ( task, param, param_value))
 
         if not param_value:
             if param not in self.output_param_dict:
@@ -295,9 +308,10 @@ class WorkflowSuperClass:
                                    either populate the pairs table or provide a \
                                    default value in the %s task file.' % (param, wildcards.pair, task))
 
-        if self.get_param_type_from_task_file(task, param) == 'path':
+        if param_value and (self.get_param_type_from_task_file(task, param) == 'path'):
             param_value = utils.fix_path(param_value)
 
+        D('%s, %s, %s' % ( task, param, param_value))
         return(param_value)
 
 

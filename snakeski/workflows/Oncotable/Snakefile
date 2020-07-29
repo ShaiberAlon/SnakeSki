@@ -8,7 +8,6 @@ from snakeski.workflows import WorkflowSuperClass
 
 
 sub_workflow_mode = False if 'workflows/Oncotable' in workflow.included[0] else True
-w.D(workflow.included)
 if not sub_workflow_mode:
     # if this is not a sub workflow then we need to initialize the workflow object
     # don't be confused, child. when things come to this point, the variable `config`
@@ -23,24 +22,28 @@ else:
     Oncotable_workflow_object = workflow_object
 
 dirs_dict = Oncotable_workflow_object.dirs_dict
-w.D(dirs_dict)
+
+def bla(a, b, c):
+    gla = Oncotable_workflow_object.get_rule_param(a,b,c)
+    return(gla)
+
 
 rule Oncotable:
     version: 1.0
     log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-Oncotable.log"))
     input:
-        annotated_bcf = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'annotated_bcf', wildcards),
-        complex = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'complex', wildcards),
-        fusions = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'fusions', wildcards),
-        jabba = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'jabba', wildcards),
-        signature_counts = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'signature_counts', wildcards),
-        gencode = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'gencode', wildcards)
+        annotated_bcf = lambda wildcards: bla('Oncotable', 'annotated_bcf', wildcards),
+        complex = lambda wildcards: bla('Oncotable', 'complex', wildcards),
+        fusions = lambda wildcards: bla('Oncotable', 'fusions', wildcards),
+        jabba = lambda wildcards: bla('Oncotable', 'jabba', wildcards),
+        signature_counts = lambda wildcards: bla('Oncotable', 'signature_counts', wildcards),
+        gencode = lambda wildcards: bla('Oncotable', 'gencode', wildcards)
     output:
     # TODO: this could be read from the task file
         Oncotable = os.path.join(Oncotable_workflow_object.ROOT_DIR, dirs_dict["Oncotable"], '{pair}', "oncotable.rds")
     params:
-        id = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'id', wildcards),
-        filter = lambda wildcards: Oncotable_workflow_object.get_rule_param('Oncotable', 'filter', wildcards),
+        id = lambda wildcards: bla('Oncotable', 'id', wildcards),
+        filter = lambda wildcards: bla('Oncotable', 'filter', wildcards),
         output_dir = os.path.join(Oncotable_workflow_object.ROOT_DIR, dirs_dict["Oncotable"], '{pair}'),
         module_path = Oncotable_workflow_object.modules['Oncotable']
     threads: Oncotable_workflow_object.T('Oncotable')
