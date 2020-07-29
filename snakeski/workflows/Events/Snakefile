@@ -1,0 +1,57 @@
+# -*- coding: utf-8
+
+import os
+import argparse
+
+import snakeski.workflows as w
+from snakeski.workflows import WorkflowSuperClass
+
+
+
+sub_workflow_mode = False if 'workflows/Events' in workflow.included[0] else True
+if not sub_workflow_mode:
+    # if this is not a sub workflow then we need to initialize the workflow object
+    # don't be confused, child. when things come to this point, the variable `config`
+    # is already magically filled in by snakemake:
+    Events_workflow_object = WorkflowSuperClass(argparse.Namespace(config=config))
+    Events_workflow_object.init('Events')
+
+    rule Events_target_rule:
+        input: Events_workflow_object.target_files
+
+else:
+    Events_workflow_object = workflow_object
+
+dirs_dict = Events_workflow_object.dirs_dict
+
+
+rule Events:
+    version: 1.0
+    log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{pair}-Events.log"))
+    input:
+        jabba = lambda wildcards: Events_workflow_object.get_rule_param('Events', 'jabba', wildcards),
+        ref = lambda wildcards: Events_workflow_object.get_rule_param('Events', 'ref', wildcards)
+    output:
+        complex = os.path.realpath(os.path.join(Events_workflow_object.ROOT_DIR, dirs_dict["Events"], '{pair}', "complex.rds"))
+    params:
+        id = lambda wildcards: Events_workflow_object.get_rule_param('Events', 'id', wildcards),
+        output_dir = os.path.join(Events_workflow_object.ROOT_DIR, dirs_dict['Events'], '{pair}'),
+        module_path = Events_workflow_object.modules['Events']
+    threads: Events_workflow_object.T('Events')
+    resources: nodes = Events_workflow_object.T('Events')
+    shell:
+        """
+        # go to the directory
+        mkdir -p {params.output_dir}
+        cd {params.output_dir}
+
+        # run
+        bash {params.module_path}run.sh {params.module_path}run.R \
+                                        -l {params.module_path} \
+                                        -i {params.id} \
+                                        -g {input.jabba} \
+                                        -r {input.ref} >> {log} 2>&1
+
+        # go back
+        cd -
+        """
