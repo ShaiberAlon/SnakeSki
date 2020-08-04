@@ -1,6 +1,7 @@
 
 import os
 import json
+import argparse
 import pandas as pd
 import snakeski.utils as utils
 import snakeski.filesnpaths as filesnpaths
@@ -250,7 +251,7 @@ class WorkflowSuperClass:
         ''' Get the name of the output from the task file'''
         return self.param_dataframes[task].loc[param, 'param_name_in_pairs_table']
 
-        
+
     def get_param_type_from_task_file(self, task, param):
         try:
             return(self.param_dataframes.get(task, pd.DataFrame()).loc[param, 'param_type'])
@@ -343,3 +344,87 @@ def D(debug_message, debug_log_file_path=".SNAKEMAKEDEBUG"):
     with open(debug_log_file_path, 'a') as output:
             output.write(str(debug_message) + '\n\n')
 
+
+class SnakefileGenerator():
+    '''Class to generate Snakefiles using task files.'''
+    def __init__(self, args):
+        A = lambda x: self.args.__dict__[x] if x in self.args.__dict__ else None
+
+        self.args = args
+        self.config = A('config')
+        self.config_file = A('config_file')
+        self.name = A('name')
+        self.output_dir = A('output_dir')
+        self.W = WorkflowSuperClass(argparse.Namespace(config_file=self.config_file))
+        self.W.init(self.name)
+
+        # in the future we might turn this to a list of wildcards
+        wildcard = '{pair}'
+
+        # get the template
+        with open(get_path_to_snakefile_template()) as f:
+            template = f.read()
+
+        allparams = {}
+        for task in self.W.param_dataframes:
+            d = self.W.param_dataframes[task]
+            params = []
+            for param in d.loc[(d['io_type'] == 'input') & (d['param_type'] == 'value')].index:
+                # iterate through non-file inputs (AKA params)
+                params.append(get_snakefile_param_definition(task, param))
+            param_str = ',\n'.join(params)
+            param_str = param_str + ','
+
+            inputs = []
+            for param in d.loc[(d['io_type'] == 'input') & (d['param_type'] == 'path')].index:
+                # iterate through "path" inputs (AKA input files)
+                inputs.append(get_snakefile_param_definition(task, param))
+            input_str = ',\n'.join(inputs)
+
+            outputs = []
+            for param, row in d.loc[d['io_type'] == 'output'].iterrows():
+                # iterate through outputs (AKA outputs)
+                filename = row['param_name_in_pairs_table']
+                filename = utils.fix_output_parameter_name(filename)
+                outputs.append(get_snakefile_output_param(task, param, filename))
+            output_str = ',\n'.join(outputs)
+
+
+            snakefile = template.format(task = task,
+                                        inputs = input_str,
+                                        outputs = output_str,
+                                        task_params = param_str,
+                                        wildcard = wildcard)
+
+            snakefile_dir = os.path.join(self.output_dir, task)
+            os.makedirs(snakefile_dir, exist_ok = True)
+            snakefile_path = os.path.join(snakefile_dir, 'Snakefile')
+            with open(snakefile_path, 'w') as f:
+                f.write(snakefile)
+
+
+def get_path_to_snakefile_template():
+    base = get_path_to_workflows_dir()
+    return(os.path.join(base, 'template.snakefile'))
+
+
+def get_snakefile_param_definition(task, param):
+    s = "        {param} = lambda wildcards: {task}_workflow_object.get_rule_param('{task}', '{param}', wildcards)"
+    s = s.format(param = param, task = task)
+    return(s)
+
+
+def get_snakefile_output_param(task, param, filename, wildcards = 'pair'):
+    s = "        {param} = os.path.realpath(os.path.join({task}_workflow_object.ROOT_DIR, dirs_dict['{task}'], '{wildcards}', '{filename}'))"
+    if type(wildcards) == list:
+        # this is a place holder in case we would want to use multiple wildcards in the future
+        # notice that if we go down this road then we would need to also treat the log definition to contain all wildcards
+        # as well as change get_rule_param to be compatible with such a change
+        wildcards_str = ', '.join(['{%s}' % wildcard for wildcard in wildcards])
+    elif type(wildcards) == str:
+        wildcards_str = '{%s}' % wildcards
+    else:
+        raise ConfigError('Wildcards must be either a single string or a list \
+                           of strings, but an object of type %s was provided.' % type(wildcards))
+    s = s.format(param = param, task = task, filename=filename, wildcards=wildcards_str)
+    return(s)
