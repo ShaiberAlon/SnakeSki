@@ -75,7 +75,7 @@ Install dependencies:
 
 ```bash
 cd SnakeSki
-pip install -r requirements.txt
+pip install -r requirments.txt
 ```
 
 ```
