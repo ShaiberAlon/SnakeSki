@@ -3,7 +3,6 @@ library('tools')
 library('optparse')
 library('data.table')
 
-# run cbs
 if (!exists('opt')) ## if opt already exists allow over-ride of command line arg processing for debugging purposes
 {
   option_list = list(

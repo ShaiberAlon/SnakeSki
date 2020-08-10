@@ -334,17 +334,6 @@ class WorkflowSuperClass:
         return(None)
 
 
-def get_path_to_workflows_dir():
-    # this returns a path
-    base_path = os.path.dirname(__file__)
-    return base_path
-
-
-def D(debug_message, debug_log_file_path=".SNAKEMAKEDEBUG"):
-    with open(debug_log_file_path, 'a') as output:
-            output.write(str(debug_message) + '\n\n')
-
-
 class SnakefileGenerator():
     '''Class to generate Snakefiles using task files.'''
     def __init__(self, args):
@@ -389,6 +378,8 @@ class SnakefileGenerator():
                 outputs.append(get_snakefile_output_param(task, param, filename))
             output_str = ',\n'.join(outputs)
 
+            param_dict_for_cmdline = get_param_dict_for_cmdline(self)
+
 
             snakefile = template.format(task = task,
                                         inputs = input_str,
@@ -403,6 +394,44 @@ class SnakefileGenerator():
                 f.write(snakefile)
 
 
+    def get_param_dict_for_cmdline(self):
+        '''Return a dictionary to use in a str.format() expression for the cmndline
+
+        The dictionary is of the following format for example:
+        d = {'jabba_rds': '{input.jabba_rds}',
+             'id': '{params.id}'}
+        '''
+
+        
+    def get_shell_command(self, task):
+        module_path = self.W.modules[task]
+
+        dir_ = module_path
+
+        if not os.path.isdir(dir_):
+            if not filesnpaths.is_file_exists(dir_, dont_raise = True):
+                raise FilesNPathsError('Task file "%s" is pointint at a non-existing \
+                                        module: "%s"' % (task, _dir))
+            # The module is a file and not a directory so we take the dirname
+            dir_ = os.path.dirname(dir_)
+
+        path = os.path.join(dir_, 'hydrant.deploy')
+
+        if not filesnpaths.is_file_exists(path, dont_raise = True):
+            # if it is not a hydrant.deploy it must be a flow.deploy
+            path = os.path.join(dir_, 'flow.deploy')
+
+        if not filesnpaths.is_file_exists(path, dont_raise = True):
+           raise ConfigError('The module directory must include a hydrant.deploy \
+                              or a flow.deploy file, but none were found in the \
+                              module path for task "%s": %s' % (task, path))
+
+        # use grep to get the command line
+        cmd.re = '^command\\s*[\\:\\=]\\s+'
+        s = open(path).read().splitlines()
+        cmd = [i.replace(re.search(cmd.re, i).group(), '') for i in s if re.search(cmd.re, i) is not None]
+
+
 def get_path_to_snakefile_template():
     base = get_path_to_workflows_dir()
     return(os.path.join(base, 'template.snakefile'))
@@ -412,6 +441,17 @@ def get_snakefile_param_definition(task, param):
     s = "        {param} = lambda wildcards: {task}_workflow_object.get_rule_param('{task}', '{param}', wildcards)"
     s = s.format(param = param, task = task)
     return(s)
+
+
+def get_path_to_workflows_dir():
+    # this returns a path
+    base_path = os.path.dirname(__file__)
+    return base_path
+
+
+def D(debug_message, debug_log_file_path=".SNAKEMAKEDEBUG"):
+    with open(debug_log_file_path, 'a') as output:
+            output.write(str(debug_message) + '\n\n')
 
 
 def get_snakefile_output_param(task, param, filename, wildcards = 'pair'):

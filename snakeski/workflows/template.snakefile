@@ -45,7 +45,7 @@ rule {task}:
         cd {{params.output_dir}}
 
         # run
-        {{run_cmd}}
+        {run_cmd}
 
         # go back
         cd -

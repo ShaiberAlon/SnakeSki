@@ -51,6 +51,7 @@ def run_command(cmdline, log_file_path, first_line_of_log_is_cmdline=True, remov
             with open(log_file_path, "a") as log_file: log_file.write('# DATE: %s\n# CMD LINE: %s\n' % (get_date(), ' '.join(cmdline)))
 
         log_file = open(log_file_path, 'a')
+        print('Running the command: "%s". Log file: %s' % (cmdline, log_file))
         ret_val = subprocess.call(cmdline, shell=False, stdout=log_file, stderr=subprocess.STDOUT)
         log_file.close()
 
@@ -64,13 +65,26 @@ def run_command(cmdline, log_file_path, first_line_of_log_is_cmdline=True, remov
 
 def save_pairs_table_as_TAB_delimited(pairs_rds, pairs_TAB_delimited_path=None):
     ''' Reads the pairs table from the rds file and stores it in a TAB delimited format'''
+    required_packages = ["data.table", "optparse"]
+    check_for_R_packages(required_packages)
 
+    if not pairs_TAB_delimited_path:
+        pairs_TAB_delimited_path = filesnpaths.get_temp_file_path()
+
+    log_file = filesnpaths.get_temp_file_path()
+    cmd = 'store-pairs-table-as-TAB-delimited.R -p %s -o %s' % (pairs_rds, pairs_TAB_delimited_path)
+    run_command(cmd, log_file)
+
+    # returning the path to the TAB-delimited file in case it was created here as a temp file and is needed for a downstream process
+    return(pairs_TAB_delimited_path)
+
+
+def check_for_R_packages(required_packages):
     # Before we do anything let's make sure the user has R installed
     is_program_exists('Rscript')
 
     # Let's make sure all the required packages are installed
     missing_packages = []
-    required_packages = ["data.table", "optparse"]
 
     log_file = filesnpaths.get_temp_file_path()
     for lib in required_packages:
@@ -82,17 +96,28 @@ def save_pairs_table_as_TAB_delimited(pairs_rds, pairs_TAB_delimited_path=None):
         raise ConfigError('The following R packages are required in order to run \
                            this program, but are missing: %s.' % ', '.join(missing_packages))
 
-    if not pairs_TAB_delimited_path:
-        pairs_TAB_delimited_path = filesnpaths.get_temp_file_path()
+
+def get_command_from_module(deploy_path):
+    tmpfile = save_command_from_module_to_TXT_file(deploy_path)
+    cmd = open(tmpfile).read().strip()
+    return(cmd)
+
+
+def save_command_from_module_to_TXT_file(deploy_path, output=None):
+    ''' Reads the pairs table from the rds file and stores it in a TAB delimited format'''
+
+    required_packages = ['optparse', 'stringr', 'stringi']
+    check_for_R_packages(required_packages)
+
+    if not output:
+        output = filesnpaths.get_temp_file_path()
 
     log_file = filesnpaths.get_temp_file_path()
-    print(log_file)
-    cmd = 'store-pairs-table-as-TAB-delimited.R -p %s -o %s' % (pairs_rds, pairs_TAB_delimited_path)
-    print(cmd)
+    cmd = 'get-cmd-from-module.R -p %s -o %s' % (deploy_path, output)
     run_command(cmd, log_file)
 
-    # returning the path to the TAB-delimited file in case it was created here as a temp file and is needed for a downstream process
-    return(pairs_TAB_delimited_path)
+    # returning the path to the output file in case it was created here as a temp file and is needed for a downstream process
+    return(output)
 
 
 def is_program_exists(program, dont_raise=False):
