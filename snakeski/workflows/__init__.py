@@ -402,35 +402,6 @@ class SnakefileGenerator():
              'id': '{params.id}'}
         '''
 
-        
-    def get_shell_command(self, task):
-        module_path = self.W.modules[task]
-
-        dir_ = module_path
-
-        if not os.path.isdir(dir_):
-            if not filesnpaths.is_file_exists(dir_, dont_raise = True):
-                raise FilesNPathsError('Task file "%s" is pointint at a non-existing \
-                                        module: "%s"' % (task, _dir))
-            # The module is a file and not a directory so we take the dirname
-            dir_ = os.path.dirname(dir_)
-
-        path = os.path.join(dir_, 'hydrant.deploy')
-
-        if not filesnpaths.is_file_exists(path, dont_raise = True):
-            # if it is not a hydrant.deploy it must be a flow.deploy
-            path = os.path.join(dir_, 'flow.deploy')
-
-        if not filesnpaths.is_file_exists(path, dont_raise = True):
-           raise ConfigError('The module directory must include a hydrant.deploy \
-                              or a flow.deploy file, but none were found in the \
-                              module path for task "%s": %s' % (task, path))
-
-        # use grep to get the command line
-        cmd.re = '^command\\s*[\\:\\=]\\s+'
-        s = open(path).read().splitlines()
-        cmd = [i.replace(re.search(cmd.re, i).group(), '') for i in s if re.search(cmd.re, i) is not None]
-
 
 def get_path_to_snakefile_template():
     base = get_path_to_workflows_dir()
