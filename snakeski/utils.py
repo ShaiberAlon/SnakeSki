@@ -2,6 +2,7 @@
 # pylint: disable=line-too-long
 
 import os
+import re
 import time
 import snakeski
 import subprocess
@@ -36,7 +37,7 @@ def format_cmdline(cmdline):
     return cmdline
 
 
-def run_command(cmdline, log_file_path, first_line_of_log_is_cmdline=True, remove_log_file_if_exists=True):
+def run_command(cmdline, log_file_path, first_line_of_log_is_cmdline=True, remove_log_file_if_exists=True, silent=False):
     """Uses subprocess.call to run your `cmdline`"""
 
     cmdline = format_cmdline(cmdline)
@@ -51,12 +52,13 @@ def run_command(cmdline, log_file_path, first_line_of_log_is_cmdline=True, remov
             with open(log_file_path, "a") as log_file: log_file.write('# DATE: %s\n# CMD LINE: %s\n' % (get_date(), ' '.join(cmdline)))
 
         log_file = open(log_file_path, 'a')
-        print('Running the command: "%s". Log file: %s' % (cmdline, log_file))
+        if not silent:
+            print('Running the command: "%s". Log file: %s' % (' '.join(cmdline), log_file_path))
         ret_val = subprocess.call(cmdline, shell=False, stdout=log_file, stderr=subprocess.STDOUT)
         log_file.close()
 
         if ret_val < 0:
-            raise ConfigError("command was terminated")
+            raise ConfigError("command was terminated. There could be a hint here: %s." % log_file_path)
         else:
             return ret_val
     except OSError as e:
@@ -88,7 +90,7 @@ def check_for_R_packages(required_packages):
 
     log_file = filesnpaths.get_temp_file_path()
     for lib in required_packages:
-        ret_val = run_command(["Rscript", "-e", "library('%s')" % lib], log_file)
+        ret_val = run_command(["Rscript", "-e", "library('%s')" % lib], log_file, silent = True)
         if ret_val != 0:
             missing_packages.append(lib)
 
@@ -113,7 +115,7 @@ def save_command_from_module_to_TXT_file(deploy_path, output=None):
         output = filesnpaths.get_temp_file_path()
 
     log_file = filesnpaths.get_temp_file_path()
-    cmd = 'get-cmd-from-module.R -p %s -o %s' % (deploy_path, output)
+    cmd = 'get-cmd-from-module.R -m %s -o %s' % (deploy_path, output)
     run_command(cmd, log_file)
 
     # returning the path to the output file in case it was created here as a temp file and is needed for a downstream process
@@ -204,22 +206,26 @@ def get_module_path_from_task_file(task_file):
 
 def load_param_table_from_task_file(task_file):
     ''' Load the parameters from the task file as a data frame'''
-
     f = open(os.path.abspath(task_file)).read().splitlines()
     # skipping commented lines
     f = [s for s in f if not s.startswith('#')]
     # skipping the line in which the module is mentioned
     f = f[1:]
 
-    # converting sequences of spaces to tabs
-    task_lines = ['\t'.join(s.split()) for s in f]
+    # converting sequences of spaces and tabs to tabs
+    task_lines = [re.sub('[\s\t]{2,}','\t',s) for s in f]
 
     col_names = get_task_column_names()
     d = pd.DataFrame(index = range(len(task_lines)), columns = col_names)
     for i in d.index:
         cols = col_names.copy()
         cols.reverse()
-        for s in task_lines[i].split('\t'):
+        task_file_columns = task_lines[i].split('\t')
+        if len(task_file_columns) > len(cols):
+            raise ConfigError('The task file should only have up to %s columns, \
+                               but on of the task files you provided ("%s") has \
+                               %s columns.' % (len(cols), task_file, len(task_file_columns)))
+        for s in task_file_columns:
             c = cols.pop()
             d.loc[i,c] = s
     # set the param name as the index:

@@ -96,15 +96,40 @@ class WorkflowSuperClass:
 
     def get_tasks_dict(self):
         ''' Returns the task dictionary by reading the config file.
-        An empty dictionary is returned by default.'''
-        tasks = self.config.get('tasks', {})
 
-        try:
-            tasks.keys()
-        except:
-            raise ConfigError('The tasks in the config file must be defined as a dictionary \
-                               with task names as keys and task file paths as values, but the \
-                               data you provided was of type "%s".' % type(tasks))
+        The input in the config file could be either:
+          1. A list of paths to task files.
+          2. A single task file.
+          3. a path to a directory.
+        An empty dictionary is returned by default.
+        '''
+
+        tasks = {}
+        task_list = self.config.get('tasks', [])
+
+        if type(task_list) is not list:
+            # check if directory
+            if os.path.isdir(task_list):
+                # get all the *.task files from the directory
+                import glob
+                task_list = glob.glob(os.path.join(task_list, '*.task'))
+            else:
+                # a single path was provided so let's convert to list
+                task_list = [task_list]
+
+        task_file_with_bad_suffix = [t for t in task_list if not t.endswith('.task')]
+        if task_file_with_bad_suffix:
+            raise ConfigError('Task files must have suffix ".task", but some of \
+                               the task files you provided don\'t. For example: \
+                               %s' % task_file_with_bad_suffix[0])
+
+        for t in task_list:
+            # make sure task file exist
+            filesnpaths.is_file_exists(t)
+
+        tasks = dict([(os.path.basename(t)[:-5], t) for t in task_list])
+
+        print(tasks)
         return(tasks)
 
 
@@ -378,14 +403,17 @@ class SnakefileGenerator():
                 outputs.append(get_snakefile_output_param(task, param, filename))
             output_str = ',\n'.join(outputs)
 
-            param_dict_for_cmdline = get_param_dict_for_cmdline(self)
+            run_cmd = self.get_shell_command(task)
 
+            format_dict = {'task': task,
+                           'inputs': input_str,
+                           'outputs': output_str,
+                           'task_params': param_str,
+                           'run_cmd': run_cmd,
+                           'wildcard': wildcard}
 
-            snakefile = template.format(task = task,
-                                        inputs = input_str,
-                                        outputs = output_str,
-                                        task_params = param_str,
-                                        wildcard = wildcard)
+            snakefile = template.format(**format_dict)
+            snakefile = snakefile.replace('<libdir>', '{params.module_path}')
 
             snakefile_dir = os.path.join(self.output_dir, task)
             os.makedirs(snakefile_dir, exist_ok = True)
@@ -393,19 +421,57 @@ class SnakefileGenerator():
             with open(snakefile_path, 'w') as f:
                 f.write(snakefile)
 
+        # create the main snakefile
+        with open(get_path_to_main_snakefile_template()) as f:
+            main_template = f.read()
+        main_snakefile = main_template.format(name = self.name)
 
-    def get_param_dict_for_cmdline(self):
+        snakefile_path = os.path.join(self.output_dir, 'Snakefile')
+        print('Writing the main Snakefile for workflow "%s" to: %s' %(self.name, snakefile_path))
+        with open(snakefile_path, 'w') as f:
+            f.write(main_snakefile)
+
+
+    def get_param_dict_for_cmdline(self, task):
         '''Return a dictionary to use in a str.format() expression for the cmndline
 
         The dictionary is of the following format for example:
-        d = {'jabba_rds': '{input.jabba_rds}',
+        cmd_dict = {'jabba_rds': '{input.jabba_rds}',
              'id': '{params.id}'}
         '''
+        d = self.W.param_dataframes[task]
+
+        cmd_dict = {}
+
+        value_params = d.loc[(d['io_type'] == 'input') & (d['param_type'] == 'value')].index
+        cmd_dict.update(dict([(param, '{params.%s}' % param) for param in value_params]))
+
+        input_params = d.loc[(d['io_type'] == 'input') & (d['param_type'] == 'path')].index
+        cmd_dict.update(dict([(param, '{input.%s}' % param) for param in input_params]))
+
+        output_params = d.loc[d['io_type'] == 'output'].iterrows()
+        output_params_fixed = [utils.fix_output_parameter_name(row['param_name_in_pairs_table']) for param, row in output_params]
+        cmd_dict.update(dict([(param, '{output.%s}' % param) for param in output_params_fixed]))
+
+        return(cmd_dict)
+
+
+    def get_shell_command(self, task):
+        ''' Get the command line from the module file and format it with proper snakemake wildcard notation.'''
+        cmd = utils.get_command_from_module(self.W.modules[task])
+        param_dict_for_cmdline = self.get_param_dict_for_cmdline(task)
+        cmd = cmd.format(**param_dict_for_cmdline)
+        return(cmd)
 
 
 def get_path_to_snakefile_template():
     base = get_path_to_workflows_dir()
     return(os.path.join(base, 'template.snakefile'))
+
+
+def get_path_to_main_snakefile_template():
+    base = get_path_to_workflows_dir()
+    return(os.path.join(base, 'template.main.snakefile'))
 
 
 def get_snakefile_param_definition(task, param):

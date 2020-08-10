@@ -1,8 +1,5 @@
 {
     "pairs_rds": "sandbox/mock.pairs.rds",
     "ROOT_DIR": "SNAKE",
-    "tasks": {
-        "Oncotable": "sandbox/tasks/Oncotable.task",
-        "Fusions": "sandbox/tasks/Fusions.task"
-    }
+    "tasks": "sandbox/tasks"
 }
