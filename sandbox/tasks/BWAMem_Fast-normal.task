@@ -9,4 +9,4 @@ input	indelsPath	recal_indels_path	path  	"/gpfs/commons/groups/imielinski_lab/D
 input	sampleName	"aligned"	value
 input	jobs.spec.memory		max_mem	value	"8"
 input	bqsr		do_bqsr	value	"TRUE"
-output	 normal_bam	 aligned.bam$
+output	 normal_bam_wgs	 aligned.bam$
