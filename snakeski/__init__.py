@@ -25,7 +25,7 @@ D = {
             ['-O', '--output-dir'],
             {'metavar': "PATH",
              'required': True,
-             'help': "Output directory."}
+             'help': "Output directory. This directory should not exist yet and will be generated."}
                 )
     }
 

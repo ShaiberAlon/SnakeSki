@@ -387,6 +387,9 @@ class SnakefileGenerator():
         # in the future we might turn this to a list of wildcards
         wildcard = '{pair}'
 
+        if os.path.isdir(self.output_dir):
+            raise ConfigError('There is already an output directory %s. We don\'t \
+                               like overwriting stuff.' % self.output_dir)
         # get the template
         with open(get_path_to_snakefile_template()) as f:
             template = f.read()
