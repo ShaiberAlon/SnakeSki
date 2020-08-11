@@ -4,6 +4,8 @@
     Some basic definitions
 """
 
+import copy
+
 __version__ = 'v1'
 
 D = {
