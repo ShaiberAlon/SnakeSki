@@ -484,7 +484,12 @@ class SnakefileGenerator():
 
     def get_shell_command(self, task):
         ''' Get the command line from the module file and format it with proper snakemake wildcard notation.'''
-        cmd = utils.get_command_from_module(self.W.modules[task])
+        try:
+            cmd = utils.get_command_from_module(self.W.modules[task])
+        except ConfigError as e:
+            raise ConfigError('While parssing the task file: "%s", we bumpped \
+                               into the following problem: "%s".' % (task, e))
+
         param_dict_for_cmdline = self.get_param_dict_for_cmdline(task)
         try:
             cmd = cmd.format(**param_dict_for_cmdline)

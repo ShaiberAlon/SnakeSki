@@ -100,6 +100,8 @@ def check_for_R_packages(required_packages):
 
 
 def get_command_from_module(deploy_path):
+    if not filesnpaths.is_file_exists(deploy_path, dont_raise = True):
+        raise ConfigError('The following deploy file is missing: %s.' % deploy_path)
     tmpfile = save_command_from_module_to_TXT_file(deploy_path)
     cmd = open(tmpfile).read().strip()
     return(cmd)
