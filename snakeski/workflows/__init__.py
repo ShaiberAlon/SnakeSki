@@ -443,7 +443,14 @@ class SnakefileGenerator():
         # create the main snakefile
         with open(get_path_to_main_snakefile_template()) as f:
             main_template = f.read()
-        main_snakefile = main_template.format(name = self.name, dir = utils.fix_path(self.output_dir))
+        include_cmd = ''
+        for task in self.W.tasks:
+            include_cmd = include_cmd + 'include: ' + utils.fix_path(os.path.join(self.output_dir,
+                                              task,
+                                              'Snakefile')) + '\n'
+
+        main_snakefile = main_template.format(name = self.name,
+                                              include_cmd = include_cmd)
 
         snakefile_path = os.path.join(self.output_dir, 'Snakefile')
         print('Writing the main Snakefile for workflow "%s" to: %s' %(self.name, snakefile_path))
