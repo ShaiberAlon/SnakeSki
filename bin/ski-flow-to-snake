@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# -*- coding: utf-8
+
+import snakeski
+import argparse
+
+from snakeski.workflows import SnakefileGenerator
+from snakeski.errors import ConfigError, FilesNPathsError
+
+__author__ = "Alon Shaiber"
+__credits__ = ["Adopted partly from the anvi'o project (https://github.com/merenlab/anvio)."]
+__license__ = "GPL 3.0"
+__version__ = snakeski.__version__
+__maintainer__ = "Alon Shaiber"
+__description__ = "Generate Snakefiles using Flow Task and Module files."
+__email__ = "alon.shaiber@gmail.com"
+__status__ = "Development"
+
+def main(args):
+    s = w.SnakefileGenerator(argparse.Namespace(config_file = args.config, name = args.workflow_name, output_dir = args.output_dir))
+
+
+if __name__ == '__main__':
+    print('If you publish results from this workflow, please do not forget to cite snakemake \
+                 (doi:10.1038/nmeth.3176)')
+
+    import argparse
+    parser = argparse.ArgumentParser(description=__description__)
+
+    parser.add_argument(*snakeski.A("config"), **snakeski.K("config"))
+    parser.add_argument(*snakeski.A("workflow-name"), **snakeski.K("workflow-name"))
+    parser.add_argument(*snakeski.A("output-dir"), **snakeski.K("output-dir"))
+
+    parser.parse_args()
+
+    try:
+        main(args)
+    except ConfigError as e:
+        print(e)
+        sys.exit(-1)
+    except FilesNPathsError as e:
+        print(e)
+        sys.exit(-2)
