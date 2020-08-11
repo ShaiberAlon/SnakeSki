@@ -15,7 +15,7 @@ rule {name}_target_rule:
 
 
 for _subworkflow in workflow_object.tasks:
-    _include = os.path.join(os.path.dirname(__file__),
+    _include = os.path.join('{dir}',
                           _subworkflow,
                           'Snakefile')
     include: _include
