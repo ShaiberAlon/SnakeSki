@@ -233,13 +233,7 @@ class WorkflowSuperClass:
         # read the entire parameter table from the task file
         param_dataframe = utils.load_param_table_from_task_file(task_file)
 
-        try:
-            param_dataframe.index = [s.replace('.', '_') for s in param_dataframe.index]
-        except:
-            print(param_dataframe)
-            print(task)
-        if 'BWAMem_Fast' in task_file:
-            print(param_dataframe)
+        param_dataframe.index = [s.replace('.', '_') for s in param_dataframe.index]
 
         # make sure that all input params are of "param_type" path or value
         bad_params = [p for p in param_dataframe.loc[param_dataframe['io_type'] == 'input'].index if param_dataframe.loc[p, 'param_type'] not in ['path', 'value']]
@@ -478,9 +472,6 @@ class SnakefileGenerator():
         ''' Get the command line from the module file and format it with proper snakemake wildcard notation.'''
         cmd = utils.get_command_from_module(self.W.modules[task])
         param_dict_for_cmdline = self.get_param_dict_for_cmdline(task)
-        print(self.W.param_dataframes[task])
-        print(cmd)
-        print(param_dict_for_cmdline)
         try:
             cmd = cmd.format(**param_dict_for_cmdline)
         except KeyError as e:
