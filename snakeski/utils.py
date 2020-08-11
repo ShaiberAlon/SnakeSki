@@ -101,7 +101,7 @@ def check_for_R_packages(required_packages):
 
 def get_command_from_module(deploy_path):
     if not filesnpaths.is_file_exists(deploy_path, dont_raise = True):
-        raise ConfigError('The following deploy file is missing: %s.' % deploy_path)
+        raise ConfigError('The following module file/folder is missing: "%s".' % deploy_path)
     tmpfile = save_command_from_module_to_TXT_file(deploy_path)
     cmd = open(tmpfile).read().strip()
     return(cmd)
@@ -208,7 +208,7 @@ def get_module_path_from_task_file(task_file):
     # skipping commented lines
     f = [s for s in f if not s.startswith('#')]
     m = f[0]
-    return(m)
+    return(fix_path(m))
 
 
 def load_param_table_from_task_file(task_file):
