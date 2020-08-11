@@ -90,7 +90,7 @@ class WorkflowSuperClass:
         output_name = self.get_output_name_from_task_file(task, param)
         if output_name:
             output_name_fixed = utils.fix_output_parameter_name(output_name)
-            return os.path.realpath(os.path.join(self.ROOT_DIR, task, '{pair}', output_name_fixed))
+            return utils.fix_path(os.path.join(self.ROOT_DIR, task, '{pair}', output_name_fixed))
         return None
 
 
