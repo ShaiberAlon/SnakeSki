@@ -171,6 +171,11 @@ def fix_output_parameter_name(param=''):
     return(param)
 
 
+def fix_name(name):
+    ''' R is cool with things having period in their definitions, but python is not so cool with that.'''
+    return(name.replace('.', '_')
+
+
 def fix_path(path):
     return(os.path.realpath(os.path.expanduser(str(path).strip('"').strip("'"))))
 

@@ -127,7 +127,7 @@ class WorkflowSuperClass:
             # make sure task file exist
             filesnpaths.is_file_exists(t)
 
-        tasks = dict([(os.path.basename(t)[:-5], t) for t in task_list])
+        tasks = dict([(utils.fix_name(os.path.basename(t)[:-5]), t) for t in task_list])
 
         return(tasks)
 
