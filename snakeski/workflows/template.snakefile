@@ -8,7 +8,7 @@ from snakeski.workflows import WorkflowSuperClass
 
 
 
-sub_workflow_mode = False if 'workflows/{task}' in workflow.included[0] else True
+sub_workflow_mode = False if '{task}/Snakefile' in workflow.included[0] else True
 if not sub_workflow_mode:
     # if this is not a sub workflow then we need to initialize the workflow object
     # don't be confused, child. when things come to this point, the variable `config`
