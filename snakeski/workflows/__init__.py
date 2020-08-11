@@ -108,6 +108,10 @@ class WorkflowSuperClass:
         task_list = self.config.get('tasks', [])
 
         if type(task_list) is not list:
+            if type(task_list) is not str:
+                raise ConfigError('"tasks" must be provided as a list or as a \
+                                   single string in the config file, but you \
+                                   provided a "%s"' % type(task_list))
             # check if directory
             if os.path.isdir(task_list):
                 # get all the *.task files from the directory
