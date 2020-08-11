@@ -87,5 +87,5 @@ echo -e "\n# >>> SnakeSki STUFF >>>" >> ~/virtual-envs/SnakeSki/bin/activate
 echo 'export PYTHONPATH=$PYTHONPATH:~/git/SnakeSki/' >> ~/virtual-envs/SnakeSki/bin/activate
 echo 'export PATH=$PATH:~/git/SnakeSki/bin:~/git/SnakeSki/sandbox' >> ~/virtual-envs/SnakeSki/bin/activate
 echo 'cd ~/git/SnakeSki && git pull && cd -' >> ~/virtual-envs/SnakeSki/bin/activate
-echo "# <<< ANVI'O STUFF <<<" >> ~/virtual-envs/SnakeSki/bin/activate
+echo "# <<< SnakeSki STUFF <<<" >> ~/virtual-envs/SnakeSki/bin/activate
 ```
