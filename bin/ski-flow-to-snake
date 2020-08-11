@@ -17,7 +17,7 @@ __email__ = "alon.shaiber@gmail.com"
 __status__ = "Development"
 
 def main(args):
-    s = w.SnakefileGenerator(argparse.Namespace(config_file = args.config, name = args.workflow_name, output_dir = args.output_dir))
+    s = SnakefileGenerator(argparse.Namespace(config_file = args.config, name = args.workflow_name, output_dir = args.output_dir))
 
 
 if __name__ == '__main__':
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument(*snakeski.A("workflow-name"), **snakeski.K("workflow-name"))
     parser.add_argument(*snakeski.A("output-dir"), **snakeski.K("output-dir"))
 
-    parser.parse_args()
+    args = parser.parse_args()
 
     try:
         main(args)
