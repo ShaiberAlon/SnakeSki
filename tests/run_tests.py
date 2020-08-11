@@ -10,4 +10,4 @@ os.makedirs('sandbox/test-output', exist_ok = True)
 W = WorkflowSuperClass(argparse.Namespace(config_file='sandbox/config.json'))
 W.init('bla')
 
-s = w.SnakefileGenerator(argparse.Namespace(config_file = 'sandbox/config.json', name = 't', output_dir = 'sandbox/test-output'))
+s = w.SnakefileGenerator(argparse.Namespace(config_file = 'sandbox/config.json', name = 'hg19', output_dir = 'sandbox/test-output/hg19'))
