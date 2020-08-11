@@ -63,7 +63,7 @@ args[,3] = gsub('\\=.*', '', args[,3])
 ## create new string with clear "formats" we can sub into
 cmd.new = cmd
 for (i in 1:nrow(args))
-    cmd.new = str_replace_all(cmd.new, stringr::fixed(args[,1][i]), paste(gsub('\\"', '', args[,2]), '{', args[,3], '}', sep = '')[i])
+    cmd.new = str_replace_all(cmd.new, stringr::fixed(args[,1][i]), paste(gsub('\\"', '', args[,2]), '{', gsub('\\.', '_', args[,3]), '}', sep = '')[i])
 
 cat(sprintf('Writing the following command to the file %s:
               "%s"', opt$output, cmd.new))

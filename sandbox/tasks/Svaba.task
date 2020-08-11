@@ -9,10 +9,8 @@ input	ref	ref_fasta  	path	 "/gpfs/commons/groups/imielinski_lab/DB/references/h
 input	panel_of_normals	pon	path	"/gpfs/commons/groups/imielinski_lab/DB/Snowman/dbsnp.vcf"
 input	indel_mask	indel.mask	path	"/gpfs/commons/groups/imielinski_lab/DB/Snowman/snowman_blacklist.bed"
 input	flags	flags	value	"'-Y /gpfs/commons/groups/imielinski_lab/DB/Snowman/viral.1.1.genomic_ns.fna -V /gpfs/commons/groups/imielinski_lab/DB/Snowman/snowman_germline_mini_160413.bed -R /gpfs/commons/groups/imielinski_lab/DB/Snowman/repeat_masker_hg19_Simple.bed'"
-output	 svaba_somatic_vcf	        [(snowman)|(svaba)].somatic.sv.vcf(\\.gz)*$
-output	 svaba_unfiltered_somatic_vcf    [(snowman)|(svaba)].unfiltered.somatic.sv.vcf(\\.gz)*$
-#output	 svaba_alignments_plot 	        alignments.txt.gz$
-#output	 svaba_breakpoints 	        bps.txt.gz$
-output	 svaba_germline_indel_vcf 	[(snowman)|(svaba)].germline.indel.vcf(\\.gz)*$
-output	 svaba_germline_vcf 	        [(snowman)|(svaba)].germline.sv.vcf(\\.gz)*$
-output	 svaba_somatic_indel_vcf        [(snowman)|(svaba)].somatic.indel.vcf(\\.gz)*$
+output	 svaba_somatic_vcf	        svaba.somatic.sv.vcf
+output	 svaba_unfiltered_somatic_vcf    svaba.unfiltered.somatic.sv.vcf
+output	 svaba_germline_indel_vcf 	svaba.germline.indel.vcf
+output	 svaba_germline_vcf 	        svaba.germline.sv.vcf
+output	 svaba_somatic_indel_vcf        svaba.somatic.indel.vcf

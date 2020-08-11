@@ -129,7 +129,6 @@ class WorkflowSuperClass:
 
         tasks = dict([(os.path.basename(t)[:-5], t) for t in task_list])
 
-        print(tasks)
         return(tasks)
 
 
@@ -142,7 +141,7 @@ class WorkflowSuperClass:
         for task in self.tasks:
             self.read_task_file(task)
 
-        self.check_input_params()
+        #self.check_input_params()
         self.populate_io_dict()
         self.update_defaults_using_output_parameters()
         self.update_targets()
@@ -185,13 +184,17 @@ class WorkflowSuperClass:
                 output_value = self.get_output_file_path(output_task, oparam)
                 current_default_value = self.param_dataframes[input_task].loc[iparam, 'default_value']
                 if not pd.isna(current_default_value):
-                    print('Warning: the parameter %s in task %s matches an output \
-                           parameter of task %s, and yet a default was provided in \
-                           %s and hence the default from the task file will be used \
-                           instead of the output of %s.' % input_task)
+                    if False:
+                        print('Warning: the parameter %s in task %s matches an output \
+                               parameter of task %s, and yet a default was provided in \
+                               %s. The default value will be ignored and the matching output \
+                               will be used. If you don\'t wish for this output to be used \
+                               and wish to use the default value, then we suggest that you \
+                               change the name of the column that this particular input parameter \
+                               is pointint at. Feel free to contact us if you are confused, this is \
+                               indeed a confusing situation.' % (iparam, input_task, output_task, input_task))
 
-                else:
-                    self.param_dataframes[input_task].loc[iparam, 'default_value'] = output_value
+                self.param_dataframes[input_task].loc[iparam, 'default_value'] = output_value
 
 
     def check_input_params(self):
@@ -230,6 +233,21 @@ class WorkflowSuperClass:
         # read the entire parameter table from the task file
         param_dataframe = utils.load_param_table_from_task_file(task_file)
 
+        try:
+            param_dataframe.index = [s.replace('.', '_') for s in param_dataframe.index]
+        except:
+            print(param_dataframe)
+            print(task)
+        if 'BWAMem_Fast' in task_file:
+            print(param_dataframe)
+
+        # make sure that all input params are of "param_type" path or value
+        bad_params = [p for p in param_dataframe.loc[param_dataframe['io_type'] == 'input'].index if param_dataframe.loc[p, 'param_type'] not in ['path', 'value']]
+        if bad_params:
+            raise ConfigError('Input parameters must be defined as either "path" \
+                               or "value", but your task file "%s" declares the \
+                               param "%s" as "%s"' % (task_file, bad_params[0], param_dataframe.loc[bad_params[0], 'param_type']))
+
         for iparam in param_dataframe.loc[(param_dataframe['io_type'] == 'input') & (param_dataframe['param_type'] == 'path')].index:
             # check for literals and store them as defaults
             if utils.is_param_a_literal(param_dataframe.loc[iparam, 'param_name_in_pairs_table']):
@@ -247,7 +265,7 @@ class WorkflowSuperClass:
                 self.input_param_dict[iparam] = [task]
 
         self.param_dataframes[task] = param_dataframe
-        
+
         for oparam in param_dataframe.loc[param_dataframe['io_type'] == 'output'].index:
             # populate param dict
             if self.output_param_dict.get(oparam):
@@ -460,7 +478,14 @@ class SnakefileGenerator():
         ''' Get the command line from the module file and format it with proper snakemake wildcard notation.'''
         cmd = utils.get_command_from_module(self.W.modules[task])
         param_dict_for_cmdline = self.get_param_dict_for_cmdline(task)
-        cmd = cmd.format(**param_dict_for_cmdline)
+        print(self.W.param_dataframes[task])
+        print(cmd)
+        print(param_dict_for_cmdline)
+        try:
+            cmd = cmd.format(**param_dict_for_cmdline)
+        except KeyError as e:
+            raise ConfigError('Something went wrong while parsing task file %s. \
+                               The following keyword is causing trouble: %s' % (task, e))
         return(cmd)
 
 
