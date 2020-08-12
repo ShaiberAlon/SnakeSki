@@ -406,13 +406,19 @@ class SnakefileGenerator():
                 # iterate through non-file inputs (AKA params)
                 params.append(get_snakefile_param_definition(task, param))
             param_str = ',\n'.join(params)
-            param_str = param_str + ','
+            if param_str:
+                # we need to add an extra comma at the end of the params that we are adding,
+                # because the "output_dir" and "module_path" params are included in the template.
+                param_str = param_str + ','
 
             inputs = []
             for param in d.loc[(d['io_type'] == 'input') & (d['param_type'] == 'path')].index:
                 # iterate through "path" inputs (AKA input files)
                 inputs.append(get_snakefile_param_definition(task, param))
             input_str = ',\n'.join(inputs)
+
+            if input_str:
+                input_str = '    input:\n' + input_str
 
             outputs = []
             for param, row in d.loc[d['io_type'] == 'output'].iterrows():
@@ -432,7 +438,7 @@ class SnakefileGenerator():
                            'wildcard': wildcard}
 
             snakefile = template.format(**format_dict)
-            snakefile = snakefile.replace('<libdir>', '{params.module_path}')
+            snakefile = snakefile.replace('<libdir>', '{params.module_path}/')
 
             snakefile_dir = os.path.join(self.output_dir, task)
             os.makedirs(snakefile_dir, exist_ok = True)
@@ -445,9 +451,9 @@ class SnakefileGenerator():
             main_template = f.read()
         include_cmd = ''
         for task in self.W.tasks:
-            include_cmd = include_cmd + 'include: ' + utils.fix_path(os.path.join(self.output_dir,
+            include_cmd = include_cmd + 'include: "' + utils.fix_path(os.path.join(self.output_dir,
                                               task,
-                                              'Snakefile')) + '\n'
+                                              'Snakefile')) + '"' + '\n'
 
         main_snakefile = main_template.format(name = self.name,
                                               include_cmd = include_cmd)
@@ -496,6 +502,15 @@ class SnakefileGenerator():
         except KeyError as e:
             raise ConfigError('Something went wrong while parsing task file %s. \
                                The following keyword is causing trouble: %s' % (task, e))
+        if '>' not in cmd:
+            # this is kind of hacky
+            # but if the command does not involve piping output
+            # then we want to pipe output to the log file
+            cmd = cmd + ' >> {log} 2>&1'
+        else:
+            # if the commnad includes piping output
+            # then we just redirect stderr to the log
+            cmd = cmd + ' 2>{log}'
         return(cmd)
 
 

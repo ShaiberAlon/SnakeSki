@@ -28,12 +28,10 @@ dirs_dict = {task}_workflow_object.dirs_dict
 rule {task}:
     version: 1.0
     log: os.path.abspath(os.path.join(dirs_dict["LOGS_DIR"], "{wildcard}-{task}.log"))
-    input:
 {inputs}
     output:
 {outputs}
-    params:
-{task_params}
+    params:{task_params}
         output_dir = os.path.join({task}_workflow_object.ROOT_DIR, dirs_dict['{task}'], '{wildcard}'),
         module_path = {task}_workflow_object.modules['{task}']
     threads: {task}_workflow_object.T('{task}')
