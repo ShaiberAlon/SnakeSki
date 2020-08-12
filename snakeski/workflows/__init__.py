@@ -89,7 +89,7 @@ class WorkflowSuperClass:
         ''' Return the path to an output file.'''
         output_name = self.get_output_name_from_task_file(task, param)
         if output_name:
-            output_name_fixed = utils.fix_output_parameter_name(output_name)
+            output_name_fixed = utils.fix_param(output_name)
             return utils.fix_path(os.path.join(self.ROOT_DIR, task, '{pair}', output_name_fixed))
         return None
 
@@ -302,7 +302,7 @@ class WorkflowSuperClass:
 
     def get_default_value_from_task_file(self, task, param):
         try:
-            return(self.param_dataframes.get(task, pd.DataFrame()).loc[param, 'default_value'])
+            return(utils.fix_param(self.param_dataframes.get(task, pd.DataFrame()).loc[param, 'default_value']))
         except KeyError:
             return None
 
@@ -424,7 +424,7 @@ class SnakefileGenerator():
             for param, row in d.loc[d['io_type'] == 'output'].iterrows():
                 # iterate through outputs (AKA outputs)
                 filename = row['param_name_in_pairs_table']
-                filename = utils.fix_output_parameter_name(filename)
+                filename = utils.fix_param(filename)
                 outputs.append(get_snakefile_output_param(task, param, filename))
             output_str = ',\n'.join(outputs)
 
@@ -482,7 +482,7 @@ class SnakefileGenerator():
         cmd_dict.update(dict([(param, '{input.%s}' % param) for param in input_params]))
 
         output_params = d.loc[d['io_type'] == 'output'].iterrows()
-        output_params_fixed = [utils.fix_output_parameter_name(row['param_name_in_pairs_table']) for param, row in output_params]
+        output_params_fixed = [utils.fix_param(row['param_name_in_pairs_table']) for param, row in output_params]
         cmd_dict.update(dict([(param, '{output.%s}' % param) for param in output_params_fixed]))
 
         return(cmd_dict)

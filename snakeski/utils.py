@@ -162,7 +162,7 @@ def get_task_column_names():
     return ['io_type', 'param', 'param_name_in_pairs_table', 'param_type', 'default_value']
 
 
-def fix_output_parameter_name(param=''):
+def fix_param(param=''):
     ''' deal with special charachters in output file names'''
     param = param.replace('$', '')
     param = param.replace('.*', '')
