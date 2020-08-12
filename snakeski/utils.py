@@ -164,12 +164,15 @@ def get_task_column_names():
 
 def fix_param(param=''):
     ''' deal with special charachters in output file names'''
-    param = param.replace('$', '')
-    param = param.replace('.*', '')
-    param = param.replace('*', '')
-    param = param.replace('^', '')
-    param = param.replace('"', '')
-    param = param.replace("'", '')
+    if type(param) == str:
+        # we only need to do this for str
+        # other parameter types could be float, int, etc.
+        param = param.replace('$', '')
+        param = param.replace('.*', '')
+        param = param.replace('*', '')
+        param = param.replace('^', '')
+        param = param.replace('"', '')
+        param = param.replace("'", '')
     return(param)
 
 

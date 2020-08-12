@@ -328,7 +328,7 @@ class WorkflowSuperClass:
         param_column_name = self.get_param_name_from_task_file(task, param)
         if utils.is_param_a_literal(param_column_name):
             # if it is a literal then we simply return the literal value
-            param_value = param_column_name
+            param_value = utils.fix_param(param_column_name)
 
         elif param_column_name in self.pairs.columns:
             # if there is such a column already in the pairs table then we read the value from there
